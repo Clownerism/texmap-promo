@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TexMap | Promotional Preview</title>
+    <title>TexMap | Panabo City Textile Loop</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -33,184 +33,149 @@
         body {
             background-color: #fcf9f4;
             color: #1a1c1e;
+            scroll-behavior: smooth;
         }
         .weave-pattern {
             background-image: radial-gradient(#006d77 0.5px, transparent 0.5px);
             background-size: 16px 16px;
             opacity: 0.04;
         }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* App View Transitions */
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Map Pin Animations */
+        .map-pin {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .map-pin.active {
+            transform: translate(-50%, -100%) scale(1.2);
+            z-index: 10;
+        }
+        .map-pin.active .pin-bg { background-color: #8b4823; }
     </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
 
-    <header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-black/5">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <button class="p-2 -ml-2 rounded-full hover:bg-black/5 transition-colors">
-                    <i data-lucide="menu" class="text-primary w-6 h-6"></i>
-                </button>
-                <h1 class="text-2xl font-extrabold text-primary italic tracking-tighter">TexMap</h1>
-            </div>
-            <div class="flex items-center gap-4">
-                <button class="p-2 rounded-full hover:bg-black/5 transition-colors">
-                    <i data-lucide="search" class="text-secondary w-5 h-5"></i>
-                </button>
-                <button class="p-2 rounded-full hover:bg-black/5 transition-colors relative">
-                    <i data-lucide="bell" class="text-secondary w-5 h-5"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-tertiary rounded-full border-2 border-white"></span>
-                </button>
-            </div>
-        </div>
-    </header>
+    <section id="landing-hero" class="relative pt-32 pb-20 px-6 max-w-7xl mx-auto text-center z-10">
+        <div class="absolute inset-0 weave-pattern pointer-events-none opacity-20"></div>
+        <span class="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+            Panabo City's Premier Loop
+        </span>
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 font-headline">
+            Sustainable <span class="text-primary italic">Textiles.</span><br>Local Connections.
+        </h1>
+        <p class="mt-4 max-w-2xl text-lg text-secondary mx-auto mb-10">
+            Discover local tailors, rent event outfits, and buy or sell student uniforms within our dedicated local marketplace.
+        </p>
+        <button onclick="scrollToApp()" class="bg-primary hover:bg-[#005a63] text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl shadow-primary/30 transition-all transform hover:-translate-y-1">
+            Launch Application
+        </button>
+    </section>
 
-    <main class="flex-1 pt-24 pb-32">
+    <div id="app-container" class="flex-1 pb-32 border-t border-black/5 bg-white relative mt-12 rounded-t-[3rem] shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
         
-        <section id="view-discovery" class="tab-content active px-6 max-w-7xl mx-auto">
-            <div class="flex gap-3 overflow-x-auto no-scrollbar py-4 mb-6">
-                <button class="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm transition-all bg-primary text-white shadow-lg shadow-primary/20 scale-105">Laundry</button>
-                <button class="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-secondary border border-black/10">Tailors</button>
-                <button class="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-secondary border border-black/10">Rentals</button>
+        <header class="sticky top-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-black/5 rounded-t-[3rem] px-6 py-4 flex justify-between items-center">
+            <h2 class="text-2xl font-extrabold text-primary italic tracking-tighter">TexMap</h2>
+            <div class="flex gap-4">
+                <button class="p-2 rounded-full hover:bg-black/5"><i data-lucide="search" class="text-secondary w-5 h-5"></i></button>
+                <button class="p-2 rounded-full hover:bg-black/5"><i data-lucide="bell" class="text-secondary w-5 h-5"></i></button>
             </div>
+        </header>
 
-            <div class="relative aspect-[4/5] md:aspect-video rounded-3xl overflow-hidden shadow-2xl mb-10 border-4 border-white bg-slate-200">
-                <img src="https://picsum.photos/seed/texmap-map/1200/800?blur=1" alt="Map" class="w-full h-full object-cover grayscale-[0.3]">
-                <div class="absolute inset-0 weave-pattern pointer-events-none opacity-20"></div>
-                
-                <div class="absolute bottom-6 left-6 right-6">
-                    <div class="bg-white/95 backdrop-blur-md p-6 rounded-3xl shadow-2xl border border-white/20">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <span class="text-[10px] font-bold text-primary tracking-widest uppercase">Current Choice</span>
-                                <h3 class="text-2xl font-bold text-slate-800">Thread & Thimble Co.</h3>
-                                <p class="text-xs text-secondary mt-0.5">482 East Weaver St, Downtown</p>
+        <div class="pt-8">
+            <section id="view-discovery" class="tab-content active px-6 max-w-7xl mx-auto">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-extrabold tracking-tight">Local <span class="text-primary">Services</span></h2>
+                    <p class="text-secondary text-sm">Find verified tailors and laundry services in Panabo City.</p>
+                </div>
+
+                <div class="relative aspect-square md:aspect-video rounded-3xl overflow-hidden shadow-2xl mb-8 border-4 border-white bg-slate-200">
+                    <img src="https://picsum.photos/seed/panabomap2/1200/800?blur=1" alt="Panabo Map" class="w-full h-full object-cover grayscale-[0.2]">
+                    <div class="absolute inset-0 bg-primary/10 pointer-events-none"></div>
+                    
+                    <div id="map-pins-container"></div>
+                    
+                    <div class="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto md:w-80">
+                        <div id="location-card" class="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-2xl border border-white/50 transform transition-all duration-300 translate-y-0 opacity-100">
                             </div>
-                            <div class="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-full">
-                                <i data-lucide="star" class="text-primary w-3 h-3"></i>
-                                <span class="text-xs font-bold text-primary">4.9</span>
-                            </div>
-                        </div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all">
-                            <i data-lucide="navigation" class="w-5 h-5"></i>
-                            Get Directions
-                        </button>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <h3 class="text-2xl font-bold mb-6">Local Specialties</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-5 bg-white rounded-3xl border border-black/5 shadow-sm flex justify-between items-center">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary">
-                            <i data-lucide="recycle" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold">Eco-Delicate Wash</h4>
-                            <p class="text-xs text-secondary">Organic detergents for silk</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="font-extrabold text-primary">$8.50/lb</div>
-                        <div class="text-[10px] text-tertiary font-bold uppercase">Ready in 24h</div>
-                    </div>
+            <section id="view-marketplace" class="tab-content px-6 max-w-7xl mx-auto">
+                <div class="flex flex-col gap-2 mb-6">
+                    <span class="text-tertiary font-bold tracking-widest text-[10px] uppercase">Marketplace</span>
+                    <h2 class="text-3xl font-extrabold tracking-tight">Panabo <span class="text-primary">Exchange</span></h2>
                 </div>
-            </div>
-        </section>
 
-        <section id="view-marketplace" class="tab-content px-6 max-w-7xl mx-auto">
-            <div class="flex flex-col gap-2 mb-8">
-                <span class="text-tertiary font-bold tracking-widest text-[10px] uppercase">The Loop</span>
-                <h2 class="text-4xl font-headline font-extrabold tracking-tight leading-none">Curated <span class="text-primary italic">Garments</span></h2>
-            </div>
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="group relative flex flex-col gap-3">
-                    <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-slate-100 shadow-sm border-2 border-white">
-                        <img src="https://picsum.photos/seed/texmap-jacket/600/800" class="w-full h-full object-cover">
-                        <div class="absolute bottom-4 right-4 bg-primary text-white font-bold text-xs px-3 py-2 rounded-2xl shadow-lg">$12/day</div>
-                    </div>
-                    <div class="px-1">
-                        <h3 class="font-bold text-slate-800 text-sm">Wool Artisan Blazer</h3>
-                        <span class="text-[9px] font-bold text-tertiary border border-tertiary/20 px-2 py-0.5 rounded-full uppercase mt-2 inline-block">Premium</span>
-                    </div>
+                <div class="flex gap-3 overflow-x-auto no-scrollbar py-2 mb-6" id="marketplace-filters">
+                    <button onclick="filterMarket('all')" class="filter-btn active flex-shrink-0 px-5 py-2 rounded-full font-bold text-sm bg-primary text-white shadow-md">All</button>
+                    <button onclick="filterMarket('uniform')" class="filter-btn flex-shrink-0 px-5 py-2 rounded-full font-bold text-sm bg-surface text-secondary border border-black/10">Uniforms</button>
+                    <button onclick="filterMarket('event')" class="filter-btn flex-shrink-0 px-5 py-2 rounded-full font-bold text-sm bg-surface text-secondary border border-black/10">Pageants & Events</button>
                 </div>
-                <div class="group relative flex flex-col gap-3">
-                    <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-slate-100 shadow-sm border-2 border-white">
-                        <img src="https://picsum.photos/seed/texmap-denim/600/800" class="w-full h-full object-cover">
-                        <div class="absolute bottom-4 right-4 bg-primary text-white font-bold text-xs px-3 py-2 rounded-2xl shadow-lg">$15/day</div>
-                    </div>
-                    <div class="px-1">
-                        <h3 class="font-bold text-slate-800 text-sm">Recycled Raw Denim</h3>
-                        <span class="text-[9px] font-bold text-tertiary border border-tertiary/20 px-2 py-0.5 rounded-full uppercase mt-2 inline-block">Eco</span>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <section id="view-profile" class="tab-content px-6 max-w-7xl mx-auto">
-            <div class="bg-gradient-to-br from-primary to-[#008080] rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl mb-8">
-                <div class="weave-pattern absolute inset-0 opacity-10"></div>
-                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div id="marketplace-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                    </div>
+            </section>
+
+            <section id="view-profile" class="tab-content px-6 max-w-7xl mx-auto">
+                <div class="flex items-center gap-6 mb-8 p-6 bg-white rounded-3xl shadow-sm border border-black/5">
+                    <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center text-primary text-2xl font-bold">
+                        PM
+                    </div>
                     <div>
-                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-bold tracking-wider mb-4 uppercase">
-                            <i data-lucide="trending-up" class="w-3 h-3"></i> Eco-Champion Level
-                        </div>
-                        <h2 class="text-5xl font-extrabold mb-2">2,450 <span class="text-2xl opacity-60">pts</span></h2>
-                        <p class="text-white/80 font-medium">You've saved 12.4kg of textile waste this month.</p>
+                        <h2 class="text-2xl font-extrabold">Project Manager</h2>
+                        <p class="text-sm text-secondary font-medium">philiplatipus@gmail.com</p>
+                        <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded">Verified Student</span>
                     </div>
                 </div>
-            </div>
 
-            <div class="bg-white rounded-3xl p-8 border border-black/5 shadow-sm mb-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                            <i data-lucide="brain" class="w-7 h-7"></i>
-                        </div>
+                <div class="bg-gradient-to-br from-primary to-[#008080] rounded-3xl p-8 text-white relative shadow-xl mb-8">
+                    <div class="weave-pattern absolute inset-0 opacity-10"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
-                            <h3 class="text-xl font-bold">Fabric Health Lab</h3>
-                            <p class="text-xs text-secondary mt-0.5">Proprietary AI Fiber Analysis</p>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+                                <i data-lucide="leaf" class="w-3 h-3"></i> Eco-Impact
+                            </div>
+                            <h2 class="text-5xl font-extrabold mb-2">3,120 <span class="text-2xl opacity-60">pts</span></h2>
+                            <p class="text-white/90">Items diverted from local landfills.</p>
                         </div>
                     </div>
                 </div>
-                <div class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 bg-slate-50">
-                    <i data-lucide="camera" class="w-12 h-12 mb-4 opacity-50"></i>
-                    <p class="font-bold text-sm uppercase tracking-widest">Promotional Mockup Only</p>
-                    <p class="text-xs mt-2 text-center px-4">Live AI analysis requires the React and Node.js backend environment.</p>
+
+                <h3 class="text-xl font-bold mb-4">My Active Listings</h3>
+                <div class="bg-surface rounded-2xl border border-black/10 p-6 flex flex-col items-center justify-center text-center text-secondary">
+                    <i data-lucide="package" class="w-10 h-10 mb-3 opacity-50"></i>
+                    <p class="font-bold">No active listings yet.</p>
+                    <p class="text-sm mt-1">Start selling your old uniforms today.</p>
+                    <button class="mt-4 px-6 py-2 bg-primary text-white rounded-xl font-bold text-sm shadow-md">Create Listing</button>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
+    </div>
 
-    </main>
-
-    <nav class="fixed bottom-0 left-0 w-full z-50 px-6 pb-6 pt-3 bg-white/80 backdrop-blur-md border-t border-black/5 rounded-t-3xl shadow-xl shadow-black/5">
-        <div class="max-w-2xl mx-auto flex justify-between items-center">
+    <nav class="fixed bottom-0 left-0 w-full z-50 px-6 pb-6 pt-3 bg-white/95 backdrop-blur-md border-t border-black/5 shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
+        <div class="max-w-md mx-auto flex justify-between items-center">
             <button onclick="switchTab('discovery', this)" class="nav-btn active flex flex-col items-center gap-1 px-4 py-2 rounded-2xl bg-primary/10 text-primary scale-110 transition-all">
                 <i data-lucide="map" class="w-6 h-6"></i>
                 <span class="text-[10px] font-bold uppercase tracking-widest">Discovery</span>
             </button>
-            <button onclick="switchTab('marketplace', this)" class="nav-btn flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-slate-400 transition-all">
+            <button onclick="switchTab('marketplace', this)" class="nav-btn flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-slate-400 hover:text-primary transition-all">
                 <i data-lucide="shopping-bag" class="w-6 h-6"></i>
                 <span class="text-[10px] font-bold uppercase tracking-widest">Market</span>
             </button>
-            <button onclick="switchTab('profile', this)" class="nav-btn flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-slate-400 transition-all">
+            <button onclick="switchTab('profile', this)" class="nav-btn flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-slate-400 hover:text-primary transition-all">
                 <i data-lucide="user" class="w-6 h-6"></i>
                 <span class="text-[10px] font-bold uppercase tracking-widest">Profile</span>
             </button>
@@ -218,27 +183,156 @@
     </nav>
 
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        // ---------------------------------------------------------
+        // MODEL (Data)
+        // ---------------------------------------------------------
+        const AppData = {
+            activeLocationId: 1,
+            locations: [
+                { id: 1, name: "DNSC Cooperative", desc: "Official campus uniforms & patches", type: "Store", x: 45, y: 30, rating: "5.0", icon: "shirt" },
+                { id: 2, name: "Stitch & Sew Panabo", desc: "Expert alterations and repairs", type: "Tailor", x: 70, y: 55, rating: "4.8", icon: "scissors" },
+                { id: 3, name: "Glamour Rentals", desc: "Gowns and formal wear for pageants", type: "Rental", x: 30, y: 75, rating: "4.9", icon: "sparkles" }
+            ],
+            marketItems: [
+                { id: 101, title: "Maritime Cadet Uniform (M)", category: "uniform", price: "₱800", seller: "Gabriel R.", img: "https://picsum.photos/seed/maritime/400/500", condition: "Slightly Used" },
+                { id: 102, title: "Red Pageant Evening Gown", category: "event", price: "₱1,200/day", seller: "Glamour Rentals", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=400&h=500", condition: "Rental" },
+                { id: 103, title: "DNSC PE Jogging Pants (L)", category: "uniform", price: "₱250", seller: "John Wyne", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=400&h=500", condition: "Good" },
+                { id: 104, title: "Barong Tagalog for Events", category: "event", price: "₱500/day", seller: "Stitch & Sew", img: "https://images.unsplash.com/photo-1617387309930-b3017a61d67a?auto=format&fit=crop&q=80&w=400&h=500", condition: "Rental" }
+            ]
+        };
 
-        // Handle Tab Switching
+        // ---------------------------------------------------------
+        // VIEW MODEL (Logic & Data Binding)
+        // ---------------------------------------------------------
+        function initApp() {
+            lucide.createIcons();
+            renderMapPins();
+            selectLocation(1); // Default selection
+            renderMarketplace('all');
+        }
+
+        // Scrolling from Hero to App
+        function scrollToApp() {
+            document.getElementById('app-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Tab Navigation Logic
         function switchTab(tabId, btnElement) {
-            // Hide all sections
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            
-            // Show target section
             document.getElementById('view-' + tabId).classList.add('active');
 
-            // Reset all buttons
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-primary/10', 'text-primary', 'scale-110');
                 btn.classList.add('text-slate-400');
             });
 
-            // Highlight active button
             btnElement.classList.remove('text-slate-400');
             btnElement.classList.add('bg-primary/10', 'text-primary', 'scale-110');
         }
+
+        // Discovery View Logic
+        function renderMapPins() {
+            const container = document.getElementById('map-pins-container');
+            container.innerHTML = '';
+            
+            AppData.locations.forEach(loc => {
+                const pin = document.createElement('div');
+                pin.className = `map-pin ${AppData.activeLocationId === loc.id ? 'active' : ''}`;
+                pin.style.left = `${loc.x}%`;
+                pin.style.top = `${loc.y}%`;
+                pin.onclick = () => selectLocation(loc.id);
+                
+                pin.innerHTML = `
+                    <div class="pin-bg bg-primary p-2 md:p-3 rounded-2xl rounded-bl-none shadow-xl border-2 border-white transition-colors">
+                        <i data-lucide="${loc.icon}" class="text-white w-5 h-5 md:w-6 md:h-6"></i>
+                    </div>
+                `;
+                container.appendChild(pin);
+            });
+            lucide.createIcons();
+        }
+
+        function selectLocation(id) {
+            AppData.activeLocationId = id;
+            renderMapPins(); // Re-render to update active classes
+            
+            const loc = AppData.locations.find(l => l.id === id);
+            const card = document.getElementById('location-card');
+            
+            // Animation reset
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-[10px] font-bold text-tertiary tracking-widest uppercase">${loc.type}</span>
+                            <h3 class="text-xl font-bold text-slate-800 leading-tight">${loc.name}</h3>
+                            <p class="text-xs text-secondary mt-1">${loc.desc}</p>
+                        </div>
+                        <div class="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-lg">
+                            <i data-lucide="star" class="text-primary w-3 h-3 fill-current"></i>
+                            <span class="text-xs font-bold text-primary">${loc.rating}</span>
+                        </div>
+                    </div>
+                    <button class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-95">
+                        <i data-lucide="navigation" class="w-4 h-4"></i> Get Directions
+                    </button>
+                `;
+                lucide.createIcons();
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 150);
+        }
+
+        // Marketplace View Logic
+        function filterMarket(category) {
+            // Update filter UI
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white', 'shadow-md');
+                btn.classList.add('bg-surface', 'text-secondary');
+            });
+            event.currentTarget.classList.remove('bg-surface', 'text-secondary');
+            event.currentTarget.classList.add('bg-primary', 'text-white', 'shadow-md');
+
+            renderMarketplace(category);
+        }
+
+        function renderMarketplace(category) {
+            const grid = document.getElementById('marketplace-grid');
+            grid.innerHTML = '';
+            
+            const filteredItems = category === 'all' 
+                ? AppData.marketItems 
+                : AppData.marketItems.filter(item => item.category === category);
+
+            filteredItems.forEach(item => {
+                grid.innerHTML += `
+                    <div class="group relative flex flex-col gap-2 bg-white p-2 rounded-2xl border border-black/5 shadow-sm">
+                        <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-100">
+                            <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover">
+                            <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-slate-900 font-extrabold text-xs px-2 py-1 rounded-lg shadow-sm">
+                                ${item.price}
+                            </div>
+                        </div>
+                        <div class="px-1 pb-1">
+                            <h3 class="font-bold text-slate-800 text-sm leading-tight line-clamp-2">${item.title}</h3>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-[9px] font-bold text-secondary flex items-center gap-1">
+                                    <i data-lucide="user" class="w-3 h-3"></i> ${item.seller}
+                                </span>
+                                <span class="text-[9px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full uppercase">${item.condition}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // Initialize App on load
+        document.addEventListener("DOMContentLoaded", initApp);
     </script>
 </body>
 </html>
