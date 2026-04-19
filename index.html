@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TexMap | Promotional Preview</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#006D77',
+                        secondary: '#576063',
+                        tertiary: '#8b4823',
+                        surface: '#fcf9f4',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        headline: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #fcf9f4;
+            color: #1a1c1e;
+        }
+        .weave-pattern {
+            background-image: radial-gradient(#006d77 0.5px, transparent 0.5px);
+            background-size: 16px 16px;
+            opacity: 0.04;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-black/5">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <button class="p-2 -ml-2 rounded-full hover:bg-black/5 transition-colors">
+                    <i data-lucide="menu" class="text-primary w-6 h-6"></i>
+                </button>
+                <h1 class="text-2xl font-extrabold text-primary italic tracking-tighter">TexMap</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="p-2 rounded-full hover:bg-black/5 transition-colors">
+                    <i data-lucide="search" class="text-secondary w-5 h-5"></i>
+                </button>
+                <button class="p-2 rounded-full hover:bg-black/5 transition-colors relative">
+                    <i data-lucide="bell" class="text-secondary w-5 h-5"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-tertiary rounded-full border-2 border-white"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 pt-24 pb-32">
+        
+        <section id="view-discovery" class="tab-content active px-6 max-w-7xl mx-auto">
+            <div class="flex gap-3 overflow-x-auto no-scrollbar py-4 mb-6">
+                <button class="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm transition-all bg-primary text-white shadow-lg shadow-primary/20 scale-105">Laundry</button>
+                <button class="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-secondary border border-black/10">Tailors</button>
+                <button class="flex-shrink-0 px-6 py-2.5 rounded-full font-bold text-sm transition-all bg-white text-secondary border border-black/10">Rentals</button>
+            </div>
+
+            <div class="relative aspect-[4/5] md:aspect-video rounded-3xl overflow-hidden shadow-2xl mb-10 border-4 border-white bg-slate-200">
+                <img src="https://picsum.photos/seed/texmap-map/1200/800?blur=1" alt="Map" class="w-full h-full object-cover grayscale-[0.3]">
+                <div class="absolute inset-0 weave-pattern pointer-events-none opacity-20"></div>
+                
+                <div class="absolute bottom-6 left-6 right-6">
+                    <div class="bg-white/95 backdrop-blur-md p-6 rounded-3xl shadow-2xl border border-white/20">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="text-[10px] font-bold text-primary tracking-widest uppercase">Current Choice</span>
+                                <h3 class="text-2xl font-bold text-slate-800">Thread & Thimble Co.</h3>
+                                <p class="text-xs text-secondary mt-0.5">482 East Weaver St, Downtown</p>
+                            </div>
+                            <div class="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded-full">
+                                <i data-lucide="star" class="text-primary w-3 h-3"></i>
+                                <span class="text-xs font-bold text-primary">4.9</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all">
+                            <i data-lucide="navigation" class="w-5 h-5"></i>
+                            Get Directions
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold mb-6">Local Specialties</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-5 bg-white rounded-3xl border border-black/5 shadow-sm flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary">
+                            <i data-lucide="recycle" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">Eco-Delicate Wash</h4>
+                            <p class="text-xs text-secondary">Organic detergents for silk</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-extrabold text-primary">$8.50/lb</div>
+                        <div class="text-[10px] text-tertiary font-bold uppercase">Ready in 24h</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-marketplace" class="tab-content px-6 max-w-7xl mx-auto">
+            <div class="flex flex-col gap-2 mb-8">
+                <span class="text-tertiary font-bold tracking-widest text-[10px] uppercase">The Loop</span>
+                <h2 class="text-4xl font-headline font-extrabold tracking-tight leading-none">Curated <span class="text-primary italic">Garments</span></h2>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="group relative flex flex-col gap-3">
+                    <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-slate-100 shadow-sm border-2 border-white">
+                        <img src="https://picsum.photos/seed/texmap-jacket/600/800" class="w-full h-full object-cover">
+                        <div class="absolute bottom-4 right-4 bg-primary text-white font-bold text-xs px-3 py-2 rounded-2xl shadow-lg">$12/day</div>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-bold text-slate-800 text-sm">Wool Artisan Blazer</h3>
+                        <span class="text-[9px] font-bold text-tertiary border border-tertiary/20 px-2 py-0.5 rounded-full uppercase mt-2 inline-block">Premium</span>
+                    </div>
+                </div>
+                <div class="group relative flex flex-col gap-3">
+                    <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-slate-100 shadow-sm border-2 border-white">
+                        <img src="https://picsum.photos/seed/texmap-denim/600/800" class="w-full h-full object-cover">
+                        <div class="absolute bottom-4 right-4 bg-primary text-white font-bold text-xs px-3 py-2 rounded-2xl shadow-lg">$15/day</div>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-bold text-slate-800 text-sm">Recycled Raw Denim</h3>
+                        <span class="text-[9px] font-bold text-tertiary border border-tertiary/20 px-2 py-0.5 rounded-full uppercase mt-2 inline-block">Eco</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-profile" class="tab-content px-6 max-w-7xl mx-auto">
+            <div class="bg-gradient-to-br from-primary to-[#008080] rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl mb-8">
+                <div class="weave-pattern absolute inset-0 opacity-10"></div>
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-bold tracking-wider mb-4 uppercase">
+                            <i data-lucide="trending-up" class="w-3 h-3"></i> Eco-Champion Level
+                        </div>
+                        <h2 class="text-5xl font-extrabold mb-2">2,450 <span class="text-2xl opacity-60">pts</span></h2>
+                        <p class="text-white/80 font-medium">You've saved 12.4kg of textile waste this month.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 border border-black/5 shadow-sm mb-8">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                            <i data-lucide="brain" class="w-7 h-7"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold">Fabric Health Lab</h3>
+                            <p class="text-xs text-secondary mt-0.5">Proprietary AI Fiber Analysis</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+                    <i data-lucide="camera" class="w-12 h-12 mb-4 opacity-50"></i>
+                    <p class="font-bold text-sm uppercase tracking-widest">Promotional Mockup Only</p>
+                    <p class="text-xs mt-2 text-center px-4">Live AI analysis requires the React and Node.js backend environment.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 w-full z-50 px-6 pb-6 pt-3 bg-white/80 backdrop-blur-md border-t border-black/5 rounded-t-3xl shadow-xl shadow-black/5">
+        <div class="max-w-2xl mx-auto flex justify-between items-center">
+            <button onclick="switchTab('discovery', this)" class="nav-btn active flex flex-col items-center gap-1 px-4 py-2 rounded-2xl bg-primary/10 text-primary scale-110 transition-all">
+                <i data-lucide="map" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Discovery</span>
+            </button>
+            <button onclick="switchTab('marketplace', this)" class="nav-btn flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-slate-400 transition-all">
+                <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Market</span>
+            </button>
+            <button onclick="switchTab('profile', this)" class="nav-btn flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-slate-400 transition-all">
+                <i data-lucide="user" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Handle Tab Switching
+        function switchTab(tabId, btnElement) {
+            // Hide all sections
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            
+            // Show target section
+            document.getElementById('view-' + tabId).classList.add('active');
+
+            // Reset all buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-primary/10', 'text-primary', 'scale-110');
+                btn.classList.add('text-slate-400');
+            });
+
+            // Highlight active button
+            btnElement.classList.remove('text-slate-400');
+            btnElement.classList.add('bg-primary/10', 'text-primary', 'scale-110');
+        }
+    </script>
+</body>
+</html>
