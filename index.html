@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TexMap | The Circular Textile Loop</title>
+    <title>TexMap | Fabric Grid: TexMap</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -61,26 +61,20 @@
             overflow: hidden;
         }
 
-        /* The App Container (Mobile: Fullscreen, Desktop: Phone Frame) */
+        /* The App Container */
         #app-frame {
             position: relative;
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             background-color: #09090b;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        /* Desktop Emulation Constraints */
         @media (min-width: 640px) {
             #app-frame {
-                max-width: 400px;
-                height: 850px;
-                max-height: 95vh;
-                border-radius: 2.5rem;
-                border: 6px solid #27272a;
+                max-width: 400px; height: 850px; max-height: 95vh;
+                border-radius: 2.5rem; border: 6px solid #27272a;
             }
         }
 
@@ -93,11 +87,20 @@
 
         /* App Workspace & Tabs */
         .workspace { flex: 1; position: relative; overflow-y: auto; overflow-x: hidden; }
-        .tab-view { display: none; padding-bottom: 90px; /* Space for Bottom Nav */ }
+        .tab-view { display: none; padding-bottom: 90px; }
         .tab-view.active { display: block; animation: fade-in 0.2s ease forwards; }
         
         #view-map { padding-bottom: 0; height: 100%; display: none; }
         #view-map.active { display: block; }
+
+        /* Slide-up Modals */
+        .slide-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #09090b; z-index: 1000;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            display: flex; flex-direction: column; overflow-y: auto;
+        }
+        .slide-modal.open { transform: translateY(0); }
 
         /* Leaflet Map Overrides */
         .leaflet-container { background: #18181b !important; font-family: 'Inter', sans-serif; height: 100%; width: 100%; z-index: 1;}
@@ -108,8 +111,7 @@
         .custom-pin-wrapper {
             background: #10b981; border: 3px solid #09090b; border-radius: 50%;
             width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-            transition: transform 0.2s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); transition: transform 0.2s ease;
         }
         .custom-pin-wrapper svg { width: 16px; height: 16px; color: #09090b; }
         .leaflet-marker-icon.active-pin .custom-pin-wrapper { transform: scale(1.25); background: #f4f4f5; border-color: #10b981; }
@@ -183,7 +185,6 @@
                     <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Full Name</label>
                     <input type="text" placeholder="John Phillip" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Email Address</label>
                     <div class="relative">
@@ -191,7 +192,6 @@
                         <input type="email" value="philiplatipus@gmail.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Password</label>
                     <div class="relative">
@@ -240,13 +240,17 @@
             </div>
 
             <div id="view-market" class="tab-view px-4 py-6">
-                <div class="relative mb-6">
+                <div class="relative mb-5">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                    <input type="text" placeholder="Search uniforms, pageant wear..." class="w-full bg-app-surface border border-app-border rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-app-muted focus:outline-none focus:border-app-primary transition-colors">
+                    <input type="text" placeholder="Search apparel..." class="w-full bg-app-surface border border-app-border rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder-app-muted focus:outline-none focus:border-app-primary transition-colors">
                 </div>
-                <h2 class="text-lg font-bold text-white mb-4 tracking-tight flex items-center gap-2">
-                    <i data-lucide="sparkles" class="w-4 h-4 text-app-primary"></i> Local Exchange
-                </h2>
+                
+                <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6" id="market-filters">
+                    <button onclick="filterMarketplace('all', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-bold bg-app-primary text-app-bg">All Items</button>
+                    <button onclick="filterMarketplace('uniform', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-semibold bg-app-surface text-app-muted border border-app-border">Campus Uniforms</button>
+                    <button onclick="filterMarketplace('event', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-semibold bg-app-surface text-app-muted border border-app-border">Event Wears</button>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3.5" id="market-grid"></div>
             </div>
 
@@ -256,10 +260,10 @@
                     <div class="flex items-center gap-4 relative z-10">
                         <div class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary flex items-center justify-center text-white font-black text-xl shadow-lg">PM</div>
                         <div class="flex-1">
-                            <h2 class="text-xl font-extrabold text-white leading-tight">Project Manager</h2>
+                            <h2 class="text-xl font-extrabold text-white leading-tight">John Phillip</h2>
                             <p class="text-sm text-app-muted font-medium mb-1.5">DNSC • <span class="text-app-primary font-bold">BSIT</span></p>
                             <span class="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-app-bg bg-app-primary px-2 py-0.5 rounded-sm">
-                                <i data-lucide="shield-check" class="w-3 h-3"></i> Verified User
+                                <i data-lucide="shield-check" class="w-3 h-3"></i> Verified Student
                             </span>
                         </div>
                     </div>
@@ -293,6 +297,13 @@
                 </button>
             </div>
         </nav>
+
+        <div id="shop-modal" class="slide-modal no-scrollbar">
+            </div>
+
+        <div id="item-modal" class="slide-modal no-scrollbar">
+            </div>
+
     </div>
 </div>
 
@@ -302,17 +313,18 @@
     const AppData = {
         map: null, mapInitialized: false, markers: [],
         vendors: [
-            { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", address: "Panabo City Center", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", icon: "scissors" },
-            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", address: "Near DNSC Campus", desc: "Same-day eco-friendly washing and ironing.", icon: "shirt" },
-            { id: 3, name: "Glamour Rentals", type: "tailor", lat: 7.3050, lng: 125.6880, rating: "5.0", address: "National Highway", desc: "High-quality gowns, barongs, and formal wear.", icon: "sparkles" }
+            { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9 (124 reviews)", address: "Panabo City Center", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", fullDesc: "Stitch Master specializes in academic uniforms for DNSC students. We ensure strict compliance with the institute's dress code while providing a comfortable fit.", icon: "scissors", img: "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?auto=format&fit=crop&q=80&w=800" },
+            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7 (89 reviews)", address: "Near DNSC Campus", desc: "Same-day eco-friendly washing and ironing.", fullDesc: "Conveniently located near the campus. We handle delicate event wear and heavily soiled uniforms with eco-friendly detergents.", icon: "shirt", img: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&q=80&w=800" },
+            { id: 3, name: "Glamour Rentals", type: "tailor", lat: 7.3050, lng: 125.6880, rating: "5.0 (42 reviews)", address: "National Highway", desc: "High-quality gowns, barongs, and formal wear.", fullDesc: "Premium rentals for pageants, birthdays, and thesis defenses. Alterations are included in the rental fee to guarantee a perfect fit.", icon: "sparkles", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=800" }
         ],
         marketItems: [
-            { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=400", isRent: false },
-            { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=400", isRent: true },
-            { id: 104, title: "BSIT Dept. Polo Uniform", price: "₱250", type: "Buy", status: "S | FAIR", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=400", isRent: false }
+            { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "Gabriel C.", desc: "Complete set. Used for only one semester. Washed and ironed, ready to wear." },
+            { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", category: "event", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Stitch Master", desc: "Perfect for capstone defenses. High quality linen, very breathable." },
+            { id: 103, title: "Red Pageant Evening Gown", price: "₱1,200", type: "/day", category: "event", status: "CUSTOM", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Glamour Rentals", desc: "Stunning red silk gown perfect for campus pageants or birthday debuts. Minor alterations included." },
+            { id: 104, title: "BSIT Dept. Polo Uniform", price: "₱250", type: "Buy", category: "uniform", status: "S | FAIR", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Wyne", desc: "Standard BSIT uniform. Slight fading on the collar but no tears." }
         ],
         userListings: [
-            { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1489987707023-afc82478163c?auto=format&fit=crop&q=80&w=400", isRent: false }
+            { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1489987707023-afc82478163c?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Phillip", desc: "Complete PE uniform set." }
         ]
     };
 
@@ -326,9 +338,8 @@
     function navTo(screenId) {
         document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
-        
         if (screenId === 'screen-app' && !AppData.mapInitialized) {
-            setTimeout(initMap, 50); // Delay ensures DOM is ready
+            setTimeout(initMap, 50);
         }
     }
 
@@ -337,14 +348,11 @@
     function toggleAuth(mode) {
         authMode = mode;
         const isSignIn = mode === 'signin';
-        
         document.getElementById('btn-signin').className = isSignIn ? "flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all" : "flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all";
         document.getElementById('btn-signup').className = !isSignIn ? "flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all" : "flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all";
-        
         document.getElementById('auth-title').innerText = isSignIn ? "Welcome Back" : "Create Account";
         document.getElementById('auth-subtitle').innerText = isSignIn ? "Enter your details to access the grid." : "Join the circular textile movement.";
         document.getElementById('auth-action-btn').innerText = isSignIn ? "Sign In" : "Sign Up";
-        
         document.getElementById('field-name').style.display = isSignIn ? 'none' : 'block';
     }
 
@@ -358,7 +366,7 @@
         }, 800);
     }
 
-    // --- TAB SWITCHING (Main App) ---
+    // --- TAB SWITCHING ---
     function switchTab(tabId, title, btnElement) {
         document.getElementById('header-title').innerText = title;
         document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
@@ -370,15 +378,13 @@
         
         const targetTab = document.getElementById(`view-${tabId}`);
         targetTab.classList.add('active');
-        document.getElementById('main-workspace').scrollTop = 0; // Reset scroll
+        document.getElementById('main-workspace').scrollTop = 0;
         
         btnElement.classList.remove('text-app-muted'); btnElement.classList.add('text-app-primary');
         btnElement.querySelector('div').classList.remove('bg-transparent'); btnElement.querySelector('div').classList.add('bg-app-primary/10');
         btnElement.querySelector('span').classList.remove('font-semibold'); btnElement.querySelector('span').classList.add('font-bold');
 
-        if (tabId === 'map' && AppData.map) { 
-            setTimeout(() => AppData.map.invalidateSize(), 50); 
-        }
+        if (tabId === 'map' && AppData.map) { setTimeout(() => AppData.map.invalidateSize(), 50); }
     }
 
     // --- LEAFLET MAP LOGIC ---
@@ -434,25 +440,32 @@
                 </div>
                 <div class="flex items-center gap-1 bg-app-card px-2 py-1 rounded border border-app-border">
                     <i data-lucide="star" class="text-amber-400 w-3 h-3 fill-current"></i>
-                    <span class="text-xs font-bold text-white">${vendor.rating}</span>
+                    <span class="text-xs font-bold text-white">4.9</span>
                 </div>
             </div>
             <p class="text-sm text-app-muted leading-relaxed mb-5">${vendor.desc}</p>
-            <div class="flex gap-3">
-                <button class="flex-1 bg-app-card text-white py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-app-border border border-app-border transition-colors">
-                    <i data-lucide="message-square" class="w-4 h-4 text-app-muted"></i> Chat
-                </button>
-                <button class="flex-1 bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center hover:opacity-90 transition-opacity">Book Service</button>
-            </div>
+            
+            <button onclick="openShopModal(${vendor.id})" class="w-full bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                <i data-lucide="calendar" class="w-4 h-4"></i> Book Service
+            </button>
         `;
         lucide.createIcons();
         drawer.classList.remove('translate-y-[150%]');
         AppData.map.panTo([vendor.lat - 0.003, vendor.lng], { animate: true, duration: 0.5 }); 
     }
 
+    // --- MARKETPLACE FILTERS & RENDERING ---
+    function filterMarketplace(category, btnElement) {
+        document.querySelectorAll('#market-filters button').forEach(btn => btn.className = "shrink-0 rounded-full px-4 py-2 text-xs font-semibold bg-app-surface text-app-muted border border-app-border");
+        btnElement.className = "shrink-0 rounded-full px-4 py-2 text-xs font-bold bg-app-primary text-app-bg";
+        
+        const filtered = category === 'all' ? AppData.marketItems : AppData.marketItems.filter(i => i.category === category);
+        renderGrid('market-grid', filtered);
+    }
+
     function renderGrid(containerId, items) {
         document.getElementById(containerId).innerHTML = items.map(item => `
-            <div class="bg-app-surface rounded-[1.25rem] p-2 border border-app-border flex flex-col h-full shadow-sm hover:border-app-primary/50 transition-colors cursor-pointer">
+            <div onclick="openItemModal(${item.id})" class="bg-app-surface rounded-[1.25rem] p-2 border border-app-border flex flex-col h-full shadow-sm hover:border-app-primary/50 transition-colors cursor-pointer">
                 <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-app-card mb-3">
                     <img src="${item.img}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                     <div class="absolute top-2 left-2 bg-app-bg/80 backdrop-blur-md text-white font-bold text-[9px] px-2 py-1 rounded-lg border border-app-border uppercase tracking-widest">${item.status}</div>
@@ -462,10 +475,87 @@
                     <div class="text-app-primary font-bold text-sm mb-3 mt-auto">
                         ${item.price} <span class="text-[9px] text-app-muted font-medium uppercase tracking-widest">${item.type}</span>
                     </div>
-                    <button class="w-full bg-app-card border border-app-border hover:bg-app-primary hover:text-app-bg hover:border-app-primary text-white py-2.5 rounded-xl font-bold text-xs transition-all mt-auto shadow-sm">${item.isRent ? 'Reserve' : 'Buy Now'}</button>
                 </div>
             </div>
         `).join('');
+    }
+
+    // --- OVERLAY MODALS LOGIC ---
+    function openShopModal(id) {
+        const vendor = AppData.vendors.find(v => v.id === id);
+        const modal = document.getElementById('shop-modal');
+        
+        modal.innerHTML = `
+            <div class="relative w-full h-64 flex-none bg-app-card">
+                <img src="${vendor.img}" class="w-full h-full object-cover opacity-80">
+                <div class="absolute inset-0 bg-gradient-to-t from-app-bg to-transparent"></div>
+                <button onclick="closeModal('shop-modal')" class="absolute top-6 left-5 w-10 h-10 bg-app-bg/50 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-app-border hover:bg-app-bg transition-colors">
+                    <i data-lucide="arrow-down" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="px-5 pb-8 -mt-6 relative z-10 flex-1 overflow-y-auto no-scrollbar">
+                <span class="inline-block text-[10px] font-bold text-app-primary bg-app-primary/10 px-2 py-1 rounded uppercase tracking-widest mb-3 border border-app-primary/20">${vendor.type}</span>
+                <h2 class="text-3xl font-extrabold text-white leading-tight mb-2">${vendor.name}</h2>
+                <div class="flex items-center gap-2 mb-6">
+                    <i data-lucide="star" class="text-amber-400 w-4 h-4 fill-current"></i>
+                    <span class="text-sm font-bold text-white">${vendor.rating}</span>
+                </div>
+                <h3 class="font-bold text-white mb-2 border-t border-app-border pt-4">About the Shop</h3>
+                <p class="text-app-muted text-sm leading-relaxed mb-6">${vendor.fullDesc}</p>
+                <div class="bg-app-surface border border-app-border rounded-xl p-4 mb-6">
+                    <div class="flex items-center gap-3 text-sm text-app-muted mb-3"><i data-lucide="map-pin" class="w-4 h-4 text-app-primary"></i> ${vendor.address}</div>
+                    <div class="flex items-center gap-3 text-sm text-app-muted"><i data-lucide="clock" class="w-4 h-4 text-app-primary"></i> 8:00 AM - 6:00 PM</div>
+                </div>
+                <button onclick="closeModal('shop-modal')" class="w-full bg-app-primary text-app-bg py-4 rounded-xl font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)]">Confirm Booking</button>
+            </div>
+        `;
+        lucide.createIcons();
+        modal.classList.add('open');
+    }
+
+    function openItemModal(id) {
+        // Look in both arrays just in case
+        const item = AppData.marketItems.find(i => i.id === id) || AppData.userListings.find(i => i.id === id);
+        const modal = document.getElementById('item-modal');
+        
+        modal.innerHTML = `
+            <div class="relative w-full h-80 flex-none bg-app-card">
+                <img src="${item.img}" class="w-full h-full object-cover">
+                <button onclick="closeModal('item-modal')" class="absolute top-6 right-5 w-10 h-10 bg-app-bg/50 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-app-border hover:bg-app-bg transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="px-5 py-6 flex-1 overflow-y-auto no-scrollbar">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <span class="inline-block text-[10px] font-bold text-app-muted bg-app-surface border border-app-border px-2 py-1 rounded uppercase tracking-widest mb-2">${item.status}</span>
+                        <h2 class="text-2xl font-extrabold text-white leading-tight">${item.title}</h2>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <span class="text-3xl font-black text-app-primary">${item.price}</span>
+                    <span class="text-sm text-app-muted font-medium uppercase tracking-widest">${item.type}</span>
+                </div>
+                <p class="text-app-muted text-sm leading-relaxed mb-6">${item.desc}</p>
+                <div class="flex items-center gap-4 bg-app-surface border border-app-border p-4 rounded-2xl mb-8">
+                    <div class="w-10 h-10 bg-app-card rounded-full border border-app-border flex items-center justify-center text-white font-bold">${item.seller.charAt(0)}</div>
+                    <div>
+                        <p class="text-[10px] text-app-muted uppercase tracking-wider font-bold">Listed by</p>
+                        <p class="text-sm font-bold text-white">${item.seller}</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button class="flex-1 bg-app-card border border-app-border text-white py-4 rounded-xl font-bold shadow-sm transition-colors hover:bg-app-surface">Message</button>
+                    <button onclick="closeModal('item-modal')" class="flex-1 bg-app-primary text-app-bg py-4 rounded-xl font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)]">${item.isRent ? 'Reserve Item' : 'Buy Now'}</button>
+                </div>
+            </div>
+        `;
+        lucide.createIcons();
+        modal.classList.add('open');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('open');
     }
 </script>
 </body>
