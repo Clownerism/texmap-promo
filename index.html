@@ -7,11 +7,10 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Custom Tailwind config mirroring your styles.css
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -26,80 +25,72 @@
                         muted: 'oklch(0.27 0.045 250)',
                         mutedForeground: 'oklch(0.7 0.03 245)'
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
 
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
     <style>
         body {
             background-color: oklch(0.18 0.04 250);
             color: oklch(0.97 0.01 240);
             -webkit-tap-highlight-color: transparent;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevent body scroll for app-like feel */
+            margin: 0; padding: 0; overflow: hidden;
         }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* View Transitions */
-        .tab-content { display: none; opacity: 0; animation: fade 0.3s forwards; height: 100%; overflow-y: auto; }
-        .tab-content.active { display: block; }
-        @keyframes fade { to { opacity: 1; } }
+        /* Smooth, non-glitchy View Transitions */
+        .tab-content { 
+            display: none; 
+            opacity: 0; 
+            height: 100%; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+        .tab-content.active { 
+            display: block; 
+            animation: fade 0.3s forwards ease-out; 
+        }
+        @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Leaflet Overrides for Dark Mode */
-        .leaflet-container {
-            background: oklch(0.22 0.04 250) !important;
-            font-family: inherit;
-        }
-        .leaflet-control-attribution {
-            background: rgba(0,0,0,0.4) !important;
-            color: oklch(0.7 0.03 245) !important;
-            border-top-left-radius: 8px;
-        }
-        .leaflet-control-attribution a { color: oklch(0.82 0.15 175) !important; }
-        .leaflet-control-zoom { border: 1px solid oklch(0.32 0.04 250) !important; }
-        .leaflet-bar a {
-            background-color: oklch(0.27 0.045 250) !important;
-            color: oklch(0.97 0.01 240) !important;
-            border-color: oklch(0.32 0.04 250) !important;
-        }
+        /* Leaflet Strict Overrides */
+        .leaflet-container { background: oklch(0.22 0.04 250) !important; font-family: inherit; z-index: 10; }
+        .leaflet-control-container { z-index: 20; }
         
-        /* Custom SVG Map Pin Marker */
-        .tex-pin {
-            width: 28px;
-            height: 28px;
-            border-radius: 9999px;
-            background: oklch(0.82 0.15 175); /* Mint */
-            border: 3px solid oklch(0.18 0.04 250); /* Background */
-            box-shadow: 0 6px 18px -4px oklch(0.82 0.15 175 / 0.6);
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Stable Map Pin */
+        .stable-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: oklch(0.82 0.15 175);
+            border: 3px solid oklch(0.18 0.04 250);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease;
         }
-        .tex-pin:hover, .leaflet-marker-icon:focus .tex-pin {
-            transform: scale(1.2);
-            z-index: 1000 !important;
+        .stable-pin:hover, .leaflet-marker-icon:focus .stable-pin {
+            transform: scale(1.15);
         }
+        .stable-pin svg { width: 16px; height: 16px; stroke: oklch(0.18 0.04 250); }
     </style>
 </head>
 <body class="antialiased flex flex-col h-[100dvh] w-full">
 
-    <header class="flex-none sticky top-0 z-30 border-b border-border bg-surface/85 backdrop-blur-md">
-      <div class="mx-auto flex w-full max-w-xl items-center justify-between px-4 py-3">
+    <header class="flex-none sticky top-0 z-[2000] border-b border-border bg-surface/90 backdrop-blur-md">
+      <div class="mx-auto flex w-full max-w-xl items-center justify-between px-5 py-3.5">
         <div>
-          <p class="text-[11px] uppercase tracking-[0.18em] text-primary font-bold">Fabric Grid</p>
-          <h1 class="text-lg font-bold leading-tight" id="header-title">Map</h1>
-          <p class="text-xs text-mutedForeground" id="header-subtitle">Discover local services</p>
+          <h1 class="text-xl font-bold leading-tight tracking-tight" id="header-title">Map Interface</h1>
+          <p class="text-xs text-primary font-medium tracking-wide mt-0.5" id="header-subtitle">Discover local services</p>
         </div>
-        <div class="flex items-center gap-1.5 rounded-full border border-border bg-surfaceElevated px-3 py-1.5 text-xs font-medium text-foreground shadow-sm">
+        <div class="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm">
           <i data-lucide="map-pin" class="h-3.5 w-3.5 text-primary"></i>
           Panabo City
         </div>
@@ -109,102 +100,149 @@
     <main class="flex-1 relative overflow-hidden w-full max-w-xl mx-auto bg-background">
         
         <section id="view-map" class="tab-content active relative">
-            <div class="absolute top-4 left-0 w-full z-[400] px-4 pointer-events-none">
+            <div class="absolute top-4 left-0 w-full z-[1000] px-4 pointer-events-none">
                 <div class="flex gap-2 overflow-x-auto no-scrollbar pointer-events-auto" id="map-filters">
-                    <button onclick="filterMap('all', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all bg-primary text-background shadow-lg shadow-primary/20">All Services</button>
-                    <button onclick="filterMap('tailor', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all border border-border bg-surfaceElevated text-mutedForeground hover:text-foreground shadow-sm">Tailors</button>
-                    <button onclick="filterMap('laundry', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all border border-border bg-surfaceElevated text-mutedForeground hover:text-foreground shadow-sm">Laundry</button>
+                    <button onclick="filterMap('all', this)" class="shrink-0 rounded-full px-5 py-2.5 text-xs font-bold transition-all bg-primary text-background shadow-lg shadow-primary/20">All Services</button>
+                    <button onclick="filterMap('tailor', this)" class="shrink-0 rounded-full px-5 py-2.5 text-xs font-bold transition-all border border-border bg-surfaceElevated text-mutedForeground hover:text-foreground shadow-sm backdrop-blur-md">Tailors</button>
+                    <button onclick="filterMap('laundry', this)" class="shrink-0 rounded-full px-5 py-2.5 text-xs font-bold transition-all border border-border bg-surfaceElevated text-mutedForeground hover:text-foreground shadow-sm backdrop-blur-md">Laundry</button>
                 </div>
             </div>
 
             <div id="leaflet-map" class="h-full w-full"></div>
 
-            <div class="absolute bottom-4 left-4 right-4 z-[400] pointer-events-none">
-                <div id="map-drawer" class="bg-surfaceElevated rounded-[2rem] border border-border p-6 transform translate-y-[150%] transition-transform duration-400 ease-out shadow-2xl pointer-events-auto">
+            <div class="absolute bottom-6 left-4 right-4 z-[1000] pointer-events-none">
+                <div id="map-drawer" class="bg-surfaceElevated/95 backdrop-blur-xl rounded-[2rem] border border-border p-6 transform translate-y-[150%] transition-transform duration-300 ease-out shadow-[0_-10px_40px_rgba(0,0,0,0.5)] pointer-events-auto">
                     </div>
             </div>
         </section>
 
-        <section id="view-event-wear" class="tab-content px-4 py-6 pb-24">
-            <h2 class="text-2xl font-bold text-foreground text-center mb-6 tracking-tight">Circular Marketplace</h2>
+        <section id="view-event-wear" class="tab-content px-5 py-6 pb-28">
+            <h2 class="text-3xl font-extrabold text-foreground mb-6 tracking-tight">Circular Market</h2>
             
-            <div class="relative mb-6">
+            <div class="relative mb-8">
                 <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-mutedForeground"></i>
-                <input type="text" placeholder="Search uniforms, pageant wear..." class="w-full bg-surfaceElevated border border-border rounded-full py-3 pl-10 pr-4 text-sm text-foreground placeholder-mutedForeground focus:outline-none focus:border-primary transition-colors shadow-sm">
+                <input type="text" placeholder="Search uniforms, outfits..." class="w-full bg-surface border border-border rounded-2xl py-3.5 pl-11 pr-4 text-sm text-foreground placeholder-mutedForeground focus:outline-none focus:border-primary transition-colors shadow-sm">
             </div>
 
-            <div class="grid grid-cols-2 gap-4" id="marketplace-grid">
+            <div class="grid grid-cols-2 gap-4 md:gap-5" id="marketplace-grid">
                 </div>
         </section>
 
-        <section id="view-feed" class="tab-content px-4 py-6 pb-24">
-            <h2 class="text-2xl font-bold text-foreground text-center mb-6 tracking-tight">Ecosystem Feed</h2>
-            <div class="flex flex-col gap-4">
-                <div class="bg-surfaceElevated p-5 rounded-2xl border border-border shadow-sm">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold border border-primary/30">SC</div>
-                        <div>
-                            <p class="font-bold text-sm text-foreground">Student Council</p>
-                            <p class="text-[10px] uppercase tracking-wider text-mutedForeground">2 hours ago</p>
+        <section id="view-profile" class="tab-content px-5 py-6 pb-28">
+            
+            <div class="bg-surfaceElevated rounded-[2rem] p-6 border border-border shadow-lg mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full filter blur-2xl -translate-y-1/2 translate-x-1/4"></div>
+                
+                <div class="relative z-10 flex items-center gap-5">
+                    <div class="w-20 h-20 rounded-full bg-background border-2 border-primary flex items-center justify-center text-primary font-black text-2xl shadow-inner">
+                        JM
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-foreground leading-tight tracking-tight">John Phillip C. Mansera</h2>
+                        <p class="text-sm font-semibold text-primary mt-0.5">Project Manager</p>
+                        <p class="text-xs text-mutedForeground mt-1.5 flex items-center gap-1.5">
+                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> DNSC • BSIT
+                        </p>
+                        <p class="text-xs text-mutedForeground mt-0.5 flex items-center gap-1.5">
+                            <i data-lucide="at-sign" class="w-3.5 h-3.5"></i> philiplatipus@gmail.com
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-8">
+                <div class="bg-surface rounded-2xl p-4 border border-border text-center">
+                    <p class="text-2xl font-black text-foreground">2</p>
+                    <p class="text-[10px] uppercase tracking-widest text-mutedForeground font-bold mt-1">Listings</p>
+                </div>
+                <div class="bg-surface rounded-2xl p-4 border border-border text-center">
+                    <p class="text-2xl font-black text-foreground">14</p>
+                    <p class="text-[10px] uppercase tracking-widest text-mutedForeground font-bold mt-1">Rents</p>
+                </div>
+                <div class="bg-surface rounded-2xl p-4 border border-border text-center">
+                    <p class="text-2xl font-black text-primary">8</p>
+                    <p class="text-[10px] uppercase tracking-widest text-primary font-bold mt-1">Favorites</p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-foreground mb-4 flex items-center gap-2"><i data-lucide="package" class="w-5 h-5 text-primary"></i> Active Listings</h3>
+            
+            <div class="flex flex-col gap-4 mb-8">
+                <div class="bg-surface rounded-2xl p-3 border border-border flex items-center gap-4 cursor-pointer hover:border-primary/50 transition-colors">
+                    <div class="w-20 h-20 rounded-xl bg-background overflow-hidden flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-sm text-foreground line-clamp-1">Maritime Cadet Uniform</h4>
+                            <span class="text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded uppercase tracking-wider">Available</span>
                         </div>
+                        <p class="text-xs text-mutedForeground mt-1">Size M | Good Condition</p>
+                        <p class="text-sm font-bold text-foreground mt-2">₱800</p>
                     </div>
-                    <p class="text-sm text-foreground mb-4 leading-relaxed">Reminder: Capstone defenses are next week. Ensure your formal attire meets the DNSC guidelines. Check the Event Wear tab for rentals from local tailors if you need a blazer!</p>
-                    <div class="flex items-center gap-4 text-mutedForeground text-xs font-medium border-t border-border pt-3">
-                        <span class="flex items-center gap-1.5 hover:text-primary cursor-pointer transition-colors"><i data-lucide="heart" class="w-4 h-4"></i> 24 Likes</span>
-                        <span class="flex items-center gap-1.5 hover:text-primary cursor-pointer transition-colors"><i data-lucide="message-square" class="w-4 h-4"></i> 5 Comments</span>
+                </div>
+
+                <div class="bg-surface rounded-2xl p-3 border border-border flex items-center gap-4 cursor-pointer hover:border-primary/50 transition-colors">
+                    <div class="w-20 h-20 rounded-xl bg-background overflow-hidden flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-sm text-foreground line-clamp-1">DNSC BSIT Polo</h4>
+                            <span class="text-[9px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded uppercase tracking-wider">Rented</span>
+                        </div>
+                        <p class="text-xs text-mutedForeground mt-1">Size S | Fair Condition</p>
+                        <p class="text-sm font-bold text-foreground mt-2">₱250 <span class="text-[10px] text-mutedForeground font-normal">/ day</span></p>
                     </div>
                 </div>
             </div>
-        </section>
 
+        </section>
     </main>
 
-    <nav class="flex-none fixed bottom-0 inset-x-0 z-40 border-t border-border bg-surface/95 backdrop-blur-md pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <ul class="mx-auto flex max-w-xl items-stretch justify-around px-2 pt-2">
+    <nav class="flex-none fixed bottom-0 inset-x-0 z-[2000] border-t border-border bg-surfaceElevated/95 backdrop-blur-xl pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <ul class="mx-auto flex max-w-xl items-stretch justify-around px-2 pt-3 pb-2">
             <li class="flex-1">
-                <button onclick="switchTab('map', 'Map', 'Discover local services', this)" class="nav-btn flex w-full flex-col items-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors text-primary">
-                    <i data-lucide="map" class="h-5 w-5"></i> Map
+                <button onclick="switchTab('map', 'Map Interface', 'Discover local services', this)" class="nav-btn flex w-full flex-col items-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all text-primary">
+                    <i data-lucide="map" class="h-6 w-6"></i> Map
                 </button>
             </li>
             <li class="flex-1">
-                <button onclick="switchTab('event-wear', 'Event Wear', 'Rent or buy apparel', this)" class="nav-btn flex w-full flex-col items-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors text-mutedForeground hover:text-foreground">
-                    <i data-lucide="shirt" class="h-5 w-5"></i> Event Wear
+                <button onclick="switchTab('event-wear', 'Marketplace', 'Campus & Event Outfits', this)" class="nav-btn flex w-full flex-col items-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all text-mutedForeground hover:text-foreground">
+                    <i data-lucide="store" class="h-6 w-6"></i> Market
                 </button>
             </li>
             <li class="flex-1">
-                <button onclick="switchTab('feed', 'Feed', 'Community updates', this)" class="nav-btn flex w-full flex-col items-center gap-1 rounded-xl py-2 text-xs font-medium transition-colors text-mutedForeground hover:text-foreground">
-                    <i data-lucide="store" class="h-5 w-5"></i> Feed
+                <button onclick="switchTab('profile', 'Dashboard', 'Manage your loop', this)" class="nav-btn flex w-full flex-col items-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all text-mutedForeground hover:text-foreground">
+                    <i data-lucide="user" class="h-6 w-6"></i> Profile
                 </button>
             </li>
         </ul>
     </nav>
 
     <script>
-        // --- 1. MODEL (Mock Data for Panabo City) ---
         const AppData = {
             map: null,
             markers: [],
             vendors: [
-                { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", address: "Panabo City Center", desc: "Expert alterations, uniform patches, and repairs." },
-                { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", address: "Near Campus", desc: "Eco-friendly washing, drying, and ironing services." },
-                { id: 3, name: "Glamour Rentals", type: "tailor", lat: 7.3050, lng: 125.6880, rating: "5.0", address: "National Highway", desc: "Gowns, barongs, and formal wear for defenses and pageants." }
+                { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", address: "Panabo City Center", desc: "Expert alterations, uniform patches, and repairs.", icon: "scissors" },
+                { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", address: "Near Campus", desc: "Eco-friendly washing, drying, and ironing.", icon: "shirt" },
+                { id: 3, name: "Glamour Rentals", type: "tailor", lat: 7.3050, lng: 125.6880, rating: "5.0", address: "National Highway", desc: "Gowns, barongs, and formal wear.", icon: "sparkles" }
             ],
             marketItems: [
-                { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=400", isRent: false },
+                { id: 101, title: "Maritime Uniform", price: "₱800", type: "buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=400", isRent: false },
                 { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=400", isRent: true },
                 { id: 103, title: "Red Pageant Gown", price: "₱1,200", type: "/day", status: "CUSTOM", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=400", isRent: true },
-                { id: 104, title: "BSIS Polo Uniform", price: "₱250", type: "buy", status: "S | FAIR", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=400", isRent: false }
+                { id: 104, title: "BSIT Polo Uniform", price: "₱250", type: "buy", status: "S | FAIR", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=400", isRent: false }
             ]
         };
 
-        // --- 2. VIEW MODEL ---
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
             initMap();
             renderMarket();
         });
 
-        // Handle routing/tab switching visually
         function switchTab(tabId, title, subtitle, btnElement) {
             document.getElementById('header-title').innerText = title;
             document.getElementById('header-subtitle').innerText = subtitle;
@@ -213,49 +251,49 @@
             document.getElementById(`view-${tabId}`).classList.add('active');
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-primary');
-                btn.classList.add('text-mutedForeground');
+                btn.className = "nav-btn flex w-full flex-col items-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all text-mutedForeground hover:text-foreground";
             });
-            btnElement.classList.remove('text-mutedForeground');
-            btnElement.classList.add('text-primary');
+            btnElement.className = "nav-btn flex w-full flex-col items-center gap-1.5 rounded-xl py-2 text-xs font-bold transition-all text-primary";
 
-            // Force Leaflet to recalculate container bounds when map becomes visible
             if (tabId === 'map' && AppData.map) {
-                setTimeout(() => AppData.map.invalidateSize(), 50);
+                setTimeout(() => AppData.map.invalidateSize(), 100);
             }
         }
 
-        // Initialize GIS Mapping
         function initMap() {
             AppData.map = L.map('leaflet-map', {
-                zoomControl: true,
-                attributionControl: true
+                zoomControl: false, 
+                attributionControl: false 
             }).setView([7.3082, 125.6845], 14);
 
-            // Utilizing CartoDB Dark Matter tiles to match the deep navy aesthetic
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
+                maxZoom: 19
             }).addTo(AppData.map);
 
             renderPins(AppData.vendors);
         }
 
-        // Plot interactive pins
         function renderPins(vendors) {
             AppData.markers.forEach(m => AppData.map.removeLayer(m));
             AppData.markers = [];
 
-            const icon = L.divIcon({
-                className: '',
-                html: `<div class="tex-pin flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-background)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                       </div>`,
-                iconSize: [28, 28],
-                iconAnchor: [14, 28]
-            });
-
             vendors.forEach(vendor => {
+                // Hardcoding SVG inside the Leaflet icon ensures it never glitches on render
+                const svgIcon = vendor.icon === 'scissors' 
+                    ? '<path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12M6 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 16a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>'
+                    : vendor.icon === 'shirt' 
+                    ? '<path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>'
+                    : '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>';
+
+                const icon = L.divIcon({
+                    className: '',
+                    html: `<div class="stable-pin">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgIcon}</svg>
+                           </div>`,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16] // Anchored dead center for zero jitter
+                });
+
                 const marker = L.marker([vendor.lat, vendor.lng], { icon })
                     .addTo(AppData.map)
                     .on('click', () => selectVendor(vendor));
@@ -263,14 +301,13 @@
             });
         }
 
-        // Map Filtering Logic
         function filterMap(type, btnElement) {
             document.querySelectorAll('#map-filters button').forEach(btn => {
-                btn.className = "shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all border border-border bg-surfaceElevated text-mutedForeground hover:text-foreground shadow-sm";
+                btn.className = "shrink-0 rounded-full px-5 py-2.5 text-xs font-bold transition-all border border-border bg-surfaceElevated text-mutedForeground hover:text-foreground shadow-sm backdrop-blur-md";
             });
-            btnElement.className = "shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all bg-primary text-background shadow-lg shadow-primary/20";
+            btnElement.className = "shrink-0 rounded-full px-5 py-2.5 text-xs font-bold transition-all bg-primary text-background shadow-lg shadow-primary/20";
 
-            document.getElementById('map-drawer').classList.add('translate-y-[150%]'); // Dismiss drawer
+            document.getElementById('map-drawer').classList.add('translate-y-[150%]');
 
             if (type === 'all') {
                 renderPins(AppData.vendors);
@@ -278,67 +315,59 @@
             } else {
                 const filtered = AppData.vendors.filter(v => v.type === type);
                 renderPins(filtered);
-                if (filtered.length > 0) {
-                    // Fly to the first result to maintain UX flow
-                    AppData.map.flyTo([filtered[0].lat, filtered[0].lng], 15);
-                }
+                if (filtered.length > 0) AppData.map.flyTo([filtered[0].lat, filtered[0].lng], 15);
             }
         }
 
-        // Drawer interaction logic
         function selectVendor(vendor) {
             const drawer = document.getElementById('map-drawer');
-            
             drawer.innerHTML = `
-                <div class="w-12 h-1.5 bg-border rounded-full mx-auto mb-4 opacity-50"></div>
+                <div class="w-12 h-1.5 bg-border rounded-full mx-auto mb-5"></div>
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h3 class="text-xl font-bold text-foreground leading-tight tracking-tight">${vendor.name}</h3>
-                        <p class="text-[11px] text-mutedForeground font-medium uppercase tracking-wider mt-1">${vendor.type} • ${vendor.address}</p>
+                        <h3 class="text-2xl font-extrabold text-foreground leading-tight">${vendor.name}</h3>
+                        <p class="text-xs text-mutedForeground font-bold uppercase tracking-widest mt-1.5">${vendor.type} • ${vendor.address}</p>
                     </div>
-                    <div class="flex items-center gap-1 bg-background px-2 py-1 rounded-md border border-border">
-                        <i data-lucide="star" class="text-primary w-3 h-3 fill-current"></i>
-                        <span class="text-xs font-bold text-foreground">${vendor.rating}</span>
+                    <div class="flex items-center gap-1.5 bg-background px-2.5 py-1.5 rounded-lg border border-border">
+                        <i data-lucide="star" class="text-primary w-3.5 h-3.5 fill-current"></i>
+                        <span class="text-sm font-bold text-foreground">${vendor.rating}</span>
                     </div>
                 </div>
-                <p class="text-sm text-mutedForeground leading-relaxed mb-5">${vendor.desc}</p>
+                <p class="text-sm text-mutedForeground leading-relaxed mb-6 font-medium">${vendor.desc}</p>
                 <div class="grid grid-cols-2 gap-3">
-                    <button class="w-full bg-surface text-foreground py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-surfaceElevated transition-colors border border-border">
-                        <i data-lucide="message-square" class="w-4 h-4"></i> Message
+                    <button class="w-full bg-surface text-foreground py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-surfaceElevated transition-colors border border-border">
+                        <i data-lucide="message-square" class="w-4 h-4 text-mutedForeground"></i> Message
                     </button>
-                    <button class="w-full bg-primary text-background py-3.5 rounded-xl font-bold text-sm flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+                    <button class="w-full bg-primary text-background py-4 rounded-xl font-bold text-sm flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
                         Book Service
                     </button>
                 </div>
             `;
             lucide.createIcons();
             drawer.classList.remove('translate-y-[150%]');
-            
-            // Pan map down slightly so the marker isn't hidden behind the drawer
-            AppData.map.panTo([vendor.lat - 0.003, vendor.lng], { animate: true }); 
+            AppData.map.panTo([vendor.lat - 0.004, vendor.lng], { animate: true }); 
         }
 
-        // Populate Event Wear grid
         function renderMarket() {
             const grid = document.getElementById('marketplace-grid');
             grid.innerHTML = '';
             
             AppData.marketItems.forEach(item => {
                 grid.innerHTML += `
-                    <div class="bg-surfaceElevated rounded-[1.25rem] p-2 border border-border flex flex-col h-full overflow-hidden shadow-sm hover:border-primary/50 transition-colors cursor-pointer">
-                        <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-background mb-3">
-                            <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover">
-                            <div class="absolute top-2 left-2 bg-surface/90 backdrop-blur text-primary font-bold text-[9px] px-2 py-1 rounded-md border border-border uppercase tracking-widest shadow-sm">
+                    <div class="bg-surfaceElevated rounded-[1.5rem] p-2.5 border border-border flex flex-col h-full overflow-hidden shadow-sm hover:border-primary/50 transition-colors cursor-pointer">
+                        <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-background mb-3">
+                            <img src="${item.img}" class="w-full h-full object-cover">
+                            <div class="absolute top-2 left-2 bg-surface/90 backdrop-blur-md text-primary font-bold text-[9px] px-2.5 py-1.5 rounded-lg border border-border uppercase tracking-widest shadow-sm">
                                 ${item.status}
                             </div>
                         </div>
                         <div class="px-1.5 flex flex-col flex-1 pb-1">
-                            <h3 class="font-semibold text-foreground text-xs leading-snug mb-1 line-clamp-2">${item.title}</h3>
-                            <div class="text-primary font-bold text-sm mb-3 mt-auto">
-                                ${item.price} <span class="text-[9px] text-mutedForeground font-medium uppercase tracking-wider">${item.type}</span>
+                            <h3 class="font-bold text-foreground text-sm leading-snug mb-1.5 line-clamp-2">${item.title}</h3>
+                            <div class="text-primary font-black text-sm mb-4 mt-auto">
+                                ${item.price} <span class="text-[10px] text-mutedForeground font-semibold uppercase tracking-wider">${item.type}</span>
                             </div>
-                            <button class="w-full bg-primary hover:opacity-90 text-background py-2.5 rounded-xl font-bold text-xs transition-opacity mt-auto shadow-sm">
-                                ${item.isRent ? 'Reserve' : 'Purchase'}
+                            <button class="w-full bg-primary hover:opacity-90 text-background py-3 rounded-xl font-bold text-xs transition-opacity mt-auto shadow-sm">
+                                ${item.isRent ? 'Reserve Item' : 'Buy Now'}
                             </button>
                         </div>
                     </div>
