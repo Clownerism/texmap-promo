@@ -54,6 +54,8 @@
             color: #f4f4f5;
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
+            margin: 0;
+            padding: 0;
         }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -65,7 +67,7 @@
             height: 100dvh;
             width: 100%;
             flex-direction: column;
-            overflow: hidden;
+            overflow-x: hidden;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -78,7 +80,7 @@
         .main-content {
             flex: 1;
             position: relative;
-            overflow-y: auto;
+            overflow-y: hidden; /* Handled by individual tabs */
             overflow-x: hidden;
         }
         
@@ -94,7 +96,7 @@
             opacity: 1;
             z-index: 10;
         }
-        .tab-view.scrollable { overflow-y: auto; padding-bottom: 90px; }
+        .tab-view.scrollable { overflow-y: auto; padding-bottom: 100px; /* Space for nav */ }
 
         /* Map Styles */
         .leaflet-container { background: #18181b !important; font-family: 'Inter', sans-serif; height: 100%; width: 100%; }
@@ -329,14 +331,29 @@
             renderGrid('profile-listings-grid', AppData.userListings);
         });
 
-        // --- SCREEN ROUTING ---
+        // --- SCREEN ROUTING FIX (Scroll Reset) ---
         function navigateToScreen(screenId) {
+            // Hide all screens
             document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
             
-            // Lazy load map only when reaching the app screen to prevent rendering bugs
-            if (screenId === 'screen-app' && !AppData.map) {
-                setTimeout(initMap, 100); 
+            // Show new screen
+            const newScreen = document.getElementById(screenId);
+            newScreen.classList.add('active');
+            
+            // FORCE SCROLL RESET to top of screen and window
+            window.scrollTo(0, 0);
+            newScreen.scrollTop = 0;
+            
+            // Lazy load map only when reaching the app screen
+            if (screenId === 'screen-app') {
+                const activeTab = document.querySelector('.tab-view.active');
+                if(activeTab) activeTab.scrollTop = 0;
+                
+                if (!AppData.map) {
+                    setTimeout(initMap, 100); 
+                } else {
+                    setTimeout(() => AppData.map.invalidateSize(), 250);
+                }
             }
         }
 
@@ -358,7 +375,6 @@
         }
 
         function mockLogin() {
-            // Simulate backend call
             document.getElementById('auth-action-btn').innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>`;
             lucide.createIcons();
             
@@ -368,7 +384,7 @@
             }, 800);
         }
 
-        // --- INNER APP LOGIC (Tabs & Map) ---
+        // --- INNER APP LOGIC (Tabs & Map with Scroll Reset) ---
         function switchTab(tabId, title, btnElement) {
             document.getElementById('header-title').innerText = title;
             document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
@@ -378,7 +394,12 @@
                 btn.querySelector('span').classList.remove('font-bold'); btn.querySelector('span').classList.add('font-semibold');
             });
             
-            document.getElementById(`view-${tabId}`).classList.add('active');
+            const targetTab = document.getElementById(`view-${tabId}`);
+            targetTab.classList.add('active');
+            
+            // FORCE SCROLL RESET for the specific tab
+            targetTab.scrollTop = 0;
+            
             btnElement.classList.remove('text-app-muted'); btnElement.classList.add('text-app-primary');
             btnElement.querySelector('div').classList.remove('bg-transparent'); btnElement.querySelector('div').classList.add('bg-app-primary/10');
             btnElement.querySelector('span').classList.remove('font-semibold'); btnElement.querySelector('span').classList.add('font-bold');
@@ -407,7 +428,7 @@
             vendors.forEach(vendor => {
                 const marker = L.marker([vendor.lat, vendor.lng], { icon: createPinIcon(vendor, false) }).addTo(AppData.map);
                 marker.vendorId = vendor.id;
-                marker.on('click', () => selectVendor(vendor, marker));
+                marker.on('click', () => selectVendor(vendor));
                 AppData.markers.push(marker);
             });
             setTimeout(() => lucide.createIcons(), 10);
