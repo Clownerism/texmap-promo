@@ -49,6 +49,11 @@
 
     <style>
         :root { color-scheme: dark; }
+        
+        /* STRICT MOBILE RESET: 
+           Prevents the entire body from scrolling or rubber-banding.
+           All scrolling is explicitly delegated to inner containers.
+        */
         body {
             background-color: #09090b;
             color: #f4f4f5;
@@ -56,51 +61,77 @@
             overscroll-behavior-y: none;
             margin: 0;
             padding: 0;
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
         }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Screen Level Routing */
-        .app-screen {
-            display: none;
-            height: 100dvh;
+        /* SPA ROUTING ARCHITECTURE (Absolute Positioning Stack) */
+        #app-root {
+            position: relative;
             width: 100%;
-            flex-direction: column;
-            overflow-x: hidden;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .app-screen.active {
-            display: flex;
-            opacity: 1;
+            height: 100%;
+            max-width: 28rem; /* Tailwind max-w-md */
+            margin: 0 auto;
+            background-color: #09090b;
+            overflow: hidden;
         }
 
-        /* Inner App Layout */
+        .app-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #09090b;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 10;
+        }
+        .app-screen.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            z-index: 20;
+        }
+
         .main-content {
             flex: 1;
             position: relative;
-            overflow-y: hidden; /* Handled by individual tabs */
-            overflow-x: hidden;
+            overflow: hidden;
         }
         
         .tab-view {
-            display: none;
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             opacity: 0;
-            transition: opacity 0.25s ease;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            background-color: #09090b;
         }
         .tab-view.active {
-            display: block;
             opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
             z-index: 10;
         }
-        .tab-view.scrollable { overflow-y: auto; padding-bottom: 100px; /* Space for nav */ }
+        .tab-view.scrollable, .app-screen.scrollable { 
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+        .tab-view.scrollable {
+            padding-bottom: 90px; /* Space for absolute bottom nav */
+        }
 
-        /* Map Styles */
+        /* Leaflet Map Styles */
         .leaflet-container { background: #18181b !important; font-family: 'Inter', sans-serif; height: 100%; width: 100%; }
-        .leaflet-control-zoom a { background-color: #27272a !important; color: #f4f4f5 !important; border-color: #3f3f46 !important; }
+        .leaflet-control-zoom { border: none !important; margin-bottom: 90px !important; }
+        .leaflet-control-zoom a { background-color: #27272a !important; color: #f4f4f5 !important; border: 1px solid #3f3f46 !important; }
         .leaflet-control-attribution { display: none !important; }
         
         .custom-pin-wrapper {
@@ -116,93 +147,100 @@
         #map-drawer { transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
     </style>
 </head>
-<body class="antialiased w-full max-w-md mx-auto sm:border-x sm:border-app-border relative shadow-2xl bg-app-bg">
+<body>
 
-    <div id="screen-landing" class="app-screen active overflow-y-auto no-scrollbar relative px-6 py-12 flex flex-col justify-center items-center text-center">
-        <div class="absolute top-[-10%] left-[-20%] w-72 h-72 bg-app-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
-        <div class="absolute bottom-[-10%] right-[-20%] w-72 h-72 bg-teal-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+<div id="app-root" class="sm:border-x sm:border-app-border shadow-2xl">
 
-        <div class="animate-fade-in w-full max-w-sm relative z-10">
-            <div class="w-20 h-20 bg-app-card border border-app-border rounded-3xl mx-auto flex items-center justify-center mb-8 shadow-glow transform rotate-3">
-                <i data-lucide="map" class="w-10 h-10 text-app-primary -rotate-3"></i>
-            </div>
-            
-            <h1 class="text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
-                The Circular<br><span class="text-app-primary italic">Textile Loop.</span>
-            </h1>
-            
-            <p class="text-app-muted text-base mb-10 leading-relaxed px-2">
-                Discover local tailors, rent event wear, and securely trade campus uniforms within Panabo City.
-            </p>
+    <div id="screen-landing" class="app-screen active scrollable px-6 py-12 text-center">
+        <div class="flex-1 flex flex-col justify-center items-center min-h-full w-full relative">
+            <div class="absolute top-[-10%] left-[-20%] w-72 h-72 bg-app-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+            <div class="absolute bottom-[-10%] right-[-20%] w-72 h-72 bg-teal-500/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-            <div class="space-y-4 text-left mb-12">
-                <div class="flex items-center gap-4 bg-app-surface/50 p-4 rounded-2xl border border-app-border">
-                    <div class="bg-app-primary/10 p-2 rounded-full"><i data-lucide="map-pin" class="w-5 h-5 text-app-primary"></i></div>
-                    <div>
-                        <h3 class="font-bold text-sm text-white">Interactive GIS</h3>
-                        <p class="text-xs text-app-muted">Find verified tailors and laundry.</p>
+            <div class="animate-fade-in w-full max-w-sm relative z-10">
+                <div class="w-20 h-20 bg-app-card border border-app-border rounded-3xl mx-auto flex items-center justify-center mb-8 shadow-glow transform rotate-3">
+                    <i data-lucide="map" class="w-10 h-10 text-app-primary -rotate-3"></i>
+                </div>
+                
+                <h1 class="text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+                    The Circular<br><span class="text-app-primary italic">Textile Loop.</span>
+                </h1>
+                
+                <p class="text-app-muted text-base mb-10 leading-relaxed px-2">
+                    Discover local tailors, rent event wear, and securely trade campus uniforms within Panabo City.
+                </p>
+
+                <div class="space-y-4 text-left mb-12">
+                    <div class="flex items-center gap-4 bg-app-surface/50 p-4 rounded-2xl border border-app-border">
+                        <div class="bg-app-primary/10 p-2 rounded-full"><i data-lucide="map-pin" class="w-5 h-5 text-app-primary"></i></div>
+                        <div>
+                            <h3 class="font-bold text-sm text-white">Interactive GIS</h3>
+                            <p class="text-xs text-app-muted">Find verified tailors and laundry.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 bg-app-surface/50 p-4 rounded-2xl border border-app-border">
+                        <div class="bg-app-primary/10 p-2 rounded-full"><i data-lucide="shirt" class="w-5 h-5 text-app-primary"></i></div>
+                        <div>
+                            <h3 class="font-bold text-sm text-white">Local Exchange</h3>
+                            <p class="text-xs text-app-muted">Peer-to-peer uniform marketplace.</p>
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-4 bg-app-surface/50 p-4 rounded-2xl border border-app-border">
-                    <div class="bg-app-primary/10 p-2 rounded-full"><i data-lucide="shirt" class="w-5 h-5 text-app-primary"></i></div>
-                    <div>
-                        <h3 class="font-bold text-sm text-white">Local Exchange</h3>
-                        <p class="text-xs text-app-muted">Peer-to-peer uniform marketplace.</p>
+
+                <button onclick="navigateToScreen('screen-auth')" class="w-full bg-app-primary hover:bg-app-primaryHover text-app-bg py-4 rounded-2xl font-bold text-lg shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-[0.98]">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-auth" class="app-screen scrollable px-6 py-8">
+        <div class="min-h-full w-full flex flex-col relative">
+            <button onclick="navigateToScreen('screen-landing')" class="absolute top-2 left-0 text-app-muted hover:text-white transition-colors z-20">
+                <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            </button>
+
+            <div class="mt-20 mb-8 animate-fade-in">
+                <h2 class="text-3xl font-extrabold text-white mb-2" id="auth-title">Welcome Back</h2>
+                <p class="text-app-muted text-sm" id="auth-subtitle">Enter your details to access the grid.</p>
+            </div>
+
+            <div class="flex bg-app-surface p-1 rounded-xl mb-8 border border-app-border animate-fade-in">
+                <button onclick="toggleAuth('signin')" id="btn-signin" class="flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all">Sign In</button>
+                <button onclick="toggleAuth('signup')" id="btn-signup" class="flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all">Sign Up</button>
+            </div>
+
+            <div class="space-y-4 animate-fade-in">
+                <div id="field-name" class="hidden">
+                    <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Full Name</label>
+                    <input type="text" placeholder="John Phillip" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Email Address</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
+                        <input type="email" value="philiplatipus@gmail.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
+                        <input type="password" value="********" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
                     </div>
                 </div>
             </div>
 
-            <button onclick="navigateToScreen('screen-auth')" class="w-full bg-app-primary hover:bg-app-primaryHover text-app-bg py-4 rounded-2xl font-bold text-lg shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-[0.98]">
-                Get Started
+            <button onclick="mockLogin()" id="auth-action-btn" class="w-full bg-white text-app-bg hover:bg-app-primary hover:text-white py-4 rounded-xl font-bold mt-auto mb-8 transition-colors shadow-sm animate-fade-in active:scale-[0.98]">
+                Sign In
             </button>
         </div>
     </div>
 
-    <div id="screen-auth" class="app-screen px-6 py-8 flex flex-col relative overflow-y-auto no-scrollbar">
-        <button onclick="navigateToScreen('screen-landing')" class="absolute top-8 left-6 text-app-muted hover:text-white transition-colors z-20">
-            <i data-lucide="arrow-left" class="w-6 h-6"></i>
-        </button>
-
-        <div class="mt-20 mb-8 animate-fade-in">
-            <h2 class="text-3xl font-extrabold text-white mb-2" id="auth-title">Welcome Back</h2>
-            <p class="text-app-muted text-sm" id="auth-subtitle">Enter your details to access the grid.</p>
-        </div>
-
-        <div class="flex bg-app-surface p-1 rounded-xl mb-8 border border-app-border animate-fade-in">
-            <button onclick="toggleAuth('signin')" id="btn-signin" class="flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all">Sign In</button>
-            <button onclick="toggleAuth('signup')" id="btn-signup" class="flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all">Sign Up</button>
-        </div>
-
-        <div class="space-y-4 animate-fade-in">
-            <div id="field-name" class="hidden">
-                <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Full Name</label>
-                <input type="text" placeholder="John Phillip" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Email Address</label>
-                <div class="relative">
-                    <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                    <input type="email" value="philiplatipus@gmail.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Password</label>
-                <div class="relative">
-                    <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                    <input type="password" value="********" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
-                </div>
-            </div>
-        </div>
-
-        <button onclick="mockLogin()" id="auth-action-btn" class="w-full bg-white text-app-bg hover:bg-app-primary hover:text-white py-4 rounded-xl font-bold mt-10 transition-colors shadow-sm animate-fade-in active:scale-[0.98]">
-            Sign In
-        </button>
-    </div>
-
     <div id="screen-app" class="app-screen">
-        <header class="flex-none z-50 bg-app-surface/90 backdrop-blur-xl border-b border-app-border px-5 py-3.5 flex justify-between items-center pb-[env(safe-area-inset-top)]">
+        
+        <header class="flex-none z-50 bg-app-surface/90 backdrop-blur-xl border-b border-app-border px-5 py-3.5 flex justify-between items-center pt-[max(0.875rem,env(safe-area-inset-top))]">
             <div class="flex flex-col">
                 <span class="text-[10px] uppercase tracking-widest text-app-primary font-bold mb-0.5">Fabric Grid</span>
                 <h1 class="text-xl font-extrabold leading-none tracking-tight text-white" id="header-title">Map</h1>
@@ -216,15 +254,17 @@
         <main class="main-content bg-app-bg">
             
             <section id="view-map" class="tab-view active">
-                <div class="absolute top-4 left-0 w-full z-[400] px-4 pointer-events-none">
+                <div class="absolute top-4 left-0 w-full z-[500] px-4 pointer-events-none">
                     <div class="flex gap-2.5 overflow-x-auto no-scrollbar pointer-events-auto pb-2" id="map-filters">
                         <button onclick="filterMap('all', this)" class="shrink-0 rounded-full px-5 py-2 text-xs font-bold transition-all bg-app-primary text-app-bg shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-app-primary">All Spots</button>
                         <button onclick="filterMap('tailor', this)" class="shrink-0 rounded-full px-5 py-2 text-xs font-semibold transition-all bg-app-surface/90 backdrop-blur text-app-muted border border-app-border hover:text-white">Tailors</button>
                         <button onclick="filterMap('laundry', this)" class="shrink-0 rounded-full px-5 py-2 text-xs font-semibold transition-all bg-app-surface/90 backdrop-blur text-app-muted border border-app-border hover:text-white">Laundry</button>
                     </div>
                 </div>
-                <div id="leaflet-map" class="absolute inset-0 w-full h-full z-0"></div>
-                <div class="absolute bottom-6 left-4 right-4 z-[400] pointer-events-none overflow-hidden">
+                
+                <div id="leaflet-map" class="absolute inset-0 w-full h-full z-[0]"></div>
+                
+                <div class="absolute bottom-4 left-4 right-4 z-[500] pointer-events-none overflow-hidden pb-20">
                     <div id="map-drawer" class="bg-app-surface/95 backdrop-blur-xl rounded-[1.5rem] border border-app-border p-5 transform translate-y-[150%] pointer-events-auto shadow-2xl">
                         </div>
                 </div>
@@ -238,17 +278,14 @@
                 <h2 class="text-lg font-bold text-white mb-4 tracking-tight flex items-center gap-2">
                     <i data-lucide="sparkles" class="w-4 h-4 text-app-primary"></i> Local Exchange
                 </h2>
-                <div class="grid grid-cols-2 gap-3.5" id="market-grid">
-                    </div>
+                <div class="grid grid-cols-2 gap-3.5" id="market-grid"></div>
             </section>
 
             <section id="view-profile" class="tab-view scrollable px-4 py-6">
                 <div class="bg-app-surface rounded-[1.5rem] p-5 border border-app-border relative overflow-hidden shadow-glow mb-6">
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-app-primary/10 rounded-full blur-2xl pointer-events-none"></div>
                     <div class="flex items-center gap-4 relative z-10">
-                        <div class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary flex items-center justify-center text-white font-black text-xl shadow-lg">
-                            PM
-                        </div>
+                        <div class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary flex items-center justify-center text-white font-black text-xl shadow-lg">PM</div>
                         <div class="flex-1">
                             <h2 class="text-xl font-extrabold text-white leading-tight">Project Manager</h2>
                             <p class="text-sm text-app-muted font-medium mb-1.5">DNSC • <span class="text-app-primary font-bold">BSIT</span></p>
@@ -258,18 +295,9 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 border-t border-app-border mt-5 pt-4">
-                        <div class="text-center">
-                            <p class="text-lg font-bold text-white">4</p>
-                            <p class="text-[10px] text-app-muted uppercase tracking-wider font-semibold">Listings</p>
-                        </div>
-                        <div class="text-center border-l border-app-border">
-                            <p class="text-lg font-bold text-white">12</p>
-                            <p class="text-[10px] text-app-muted uppercase tracking-wider font-semibold">Sold</p>
-                        </div>
-                        <div class="text-center border-l border-app-border">
-                            <p class="text-lg font-bold text-app-primary">4.9</p>
-                            <p class="text-[10px] text-app-muted uppercase tracking-wider font-semibold">Rating</p>
-                        </div>
+                        <div class="text-center"><p class="text-lg font-bold text-white">4</p><p class="text-[10px] text-app-muted uppercase tracking-wider font-semibold">Listings</p></div>
+                        <div class="text-center border-l border-app-border"><p class="text-lg font-bold text-white">12</p><p class="text-[10px] text-app-muted uppercase tracking-wider font-semibold">Sold</p></div>
+                        <div class="text-center border-l border-app-border"><p class="text-lg font-bold text-app-primary">4.9</p><p class="text-[10px] text-app-muted uppercase tracking-wider font-semibold">Rating</p></div>
                     </div>
                 </div>
 
@@ -285,7 +313,7 @@
             </section>
         </main>
 
-        <nav class="flex-none fixed bottom-0 left-0 w-full z-[500] bg-app-surface/90 backdrop-blur-xl border-t border-app-border pb-[env(safe-area-inset-bottom)] sm:absolute">
+        <nav class="flex-none absolute bottom-0 left-0 w-full z-[600] bg-app-surface/95 backdrop-blur-xl border-t border-app-border pb-[env(safe-area-inset-bottom)]">
             <div class="flex justify-around items-center px-2 pt-2 pb-3">
                 <button onclick="switchTab('map', 'Service Map', this)" class="nav-btn text-app-primary flex flex-col items-center gap-1 w-20 transition-all duration-200">
                     <div class="p-1.5 rounded-full bg-app-primary/10"><i data-lucide="map" class="w-5 h-5"></i></div>
@@ -302,6 +330,8 @@
             </div>
         </nav>
     </div>
+
+</div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -324,35 +354,30 @@
             ]
         };
 
-        // --- INIT ---
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
             renderGrid('market-grid', AppData.marketItems);
             renderGrid('profile-listings-grid', AppData.userListings);
         });
 
-        // --- SCREEN ROUTING FIX (Scroll Reset) ---
+        // --- BUG FIX: SCREEN ROUTING WITH SCROLL RESET ---
         function navigateToScreen(screenId) {
-            // Hide all screens
             document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
             
-            // Show new screen
             const newScreen = document.getElementById(screenId);
             newScreen.classList.add('active');
             
-            // FORCE SCROLL RESET to top of screen and window
-            window.scrollTo(0, 0);
+            // Force reset scroll positions to top
             newScreen.scrollTop = 0;
             
-            // Lazy load map only when reaching the app screen
             if (screenId === 'screen-app') {
                 const activeTab = document.querySelector('.tab-view.active');
-                if(activeTab) activeTab.scrollTop = 0;
+                if (activeTab) activeTab.scrollTop = 0;
                 
                 if (!AppData.map) {
                     setTimeout(initMap, 100); 
                 } else {
-                    setTimeout(() => AppData.map.invalidateSize(), 250);
+                    setTimeout(() => AppData.map.invalidateSize(), 300);
                 }
             }
         }
@@ -384,7 +409,7 @@
             }, 800);
         }
 
-        // --- INNER APP LOGIC (Tabs & Map with Scroll Reset) ---
+        // --- INNER APP LOGIC (Tabs & Map) ---
         function switchTab(tabId, title, btnElement) {
             document.getElementById('header-title').innerText = title;
             document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
@@ -397,14 +422,14 @@
             const targetTab = document.getElementById(`view-${tabId}`);
             targetTab.classList.add('active');
             
-            // FORCE SCROLL RESET for the specific tab
+            // Force reset scroll position when switching tabs
             targetTab.scrollTop = 0;
             
             btnElement.classList.remove('text-app-muted'); btnElement.classList.add('text-app-primary');
             btnElement.querySelector('div').classList.remove('bg-transparent'); btnElement.querySelector('div').classList.add('bg-app-primary/10');
             btnElement.querySelector('span').classList.remove('font-semibold'); btnElement.querySelector('span').classList.add('font-bold');
 
-            if (tabId === 'map' && AppData.map) { setTimeout(() => AppData.map.invalidateSize(), 250); }
+            if (tabId === 'map' && AppData.map) { setTimeout(() => AppData.map.invalidateSize(), 300); }
         }
 
         function initMap() {
@@ -462,10 +487,10 @@
                 </div>
                 <p class="text-sm text-app-muted leading-relaxed mb-5">${vendor.desc}</p>
                 <div class="flex gap-3">
-                    <button class="flex-1 bg-app-card text-white py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-app-border border border-app-border">
+                    <button class="flex-1 bg-app-card text-white py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-app-border border border-app-border transition-colors">
                         <i data-lucide="message-square" class="w-4 h-4 text-app-muted"></i> Chat
                     </button>
-                    <button class="flex-1 bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center hover:opacity-90">Book Service</button>
+                    <button class="flex-1 bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center hover:opacity-90 transition-opacity">Book Service</button>
                 </div>
             `;
             lucide.createIcons();
@@ -476,9 +501,9 @@
         function renderGrid(containerId, items) {
             const grid = document.getElementById(containerId);
             grid.innerHTML = items.map(item => `
-                <div class="bg-app-surface rounded-[1.25rem] p-2 border border-app-border flex flex-col h-full shadow-sm">
+                <div class="bg-app-surface rounded-[1.25rem] p-2 border border-app-border flex flex-col h-full shadow-sm hover:border-app-primary/50 transition-colors cursor-pointer">
                     <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-app-card mb-3">
-                        <img src="${item.img}" class="w-full h-full object-cover">
+                        <img src="${item.img}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-2 left-2 bg-app-bg/80 backdrop-blur-md text-white font-bold text-[9px] px-2 py-1 rounded-lg border border-app-border uppercase tracking-widest">${item.status}</div>
                     </div>
                     <div class="px-1 flex flex-col flex-1 pb-1">
@@ -486,7 +511,7 @@
                         <div class="text-app-primary font-bold text-sm mb-3 mt-auto">
                             ${item.price} <span class="text-[9px] text-app-muted font-medium uppercase tracking-widest">${item.type}</span>
                         </div>
-                        <button class="w-full bg-app-card border border-app-border hover:bg-app-primary hover:text-app-bg hover:border-app-primary text-white py-2.5 rounded-xl font-bold text-xs transition-all mt-auto">${item.isRent ? 'Reserve' : 'Buy Now'}</button>
+                        <button class="w-full bg-app-card border border-app-border hover:bg-app-primary hover:text-app-bg hover:border-app-primary text-white py-2.5 rounded-xl font-bold text-xs transition-all mt-auto shadow-sm">${item.isRent ? 'Reserve' : 'Buy Now'}</button>
                     </div>
                 </div>
             `).join('');
