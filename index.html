@@ -18,18 +18,27 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         app: {
-                            bg: '#09090b',       // Zinc 950
-                            surface: '#18181b',  // Zinc 900
-                            card: '#27272a',     // Zinc 800
-                            border: '#3f3f46',   // Zinc 700
-                            primary: '#10b981',  // Emerald 500 (Mint Accent)
+                            bg: '#09090b',
+                            surface: '#18181b',
+                            card: '#27272a',
+                            border: '#3f3f46',
+                            primary: '#10b981',
                             primaryHover: '#059669',
-                            text: '#f4f4f5',     // Zinc 50
-                            muted: '#a1a1aa'     // Zinc 400
+                            text: '#f4f4f5',
+                            muted: '#a1a1aa'
                         }
                     },
                     boxShadow: {
                         'glow': '0 0 20px rgba(16, 185, 129, 0.15)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
                     }
                 }
             }
@@ -44,19 +53,28 @@
             background-color: #09090b;
             color: #f4f4f5;
             -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none; /* Prevents pull-to-refresh on mobile */
+            overscroll-behavior-y: none;
         }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* App Layout Architecture */
-        #app-wrapper {
-            display: flex;
+        /* Screen Level Routing */
+        .app-screen {
+            display: none;
+            height: 100dvh;
+            width: 100%;
             flex-direction: column;
-            height: 100dvh; /* Dynamic viewport height for mobile browsers */
             overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
+        .app-screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Inner App Layout */
         .main-content {
             flex: 1;
             position: relative;
@@ -64,62 +82,124 @@
             overflow-x: hidden;
         }
         
-        /* Tab Switching Logic */
         .tab-view {
             display: none;
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             opacity: 0;
-            transition: opacity 0.25s ease-in-out;
+            transition: opacity 0.25s ease;
         }
         .tab-view.active {
             display: block;
             opacity: 1;
             z-index: 10;
         }
-        .tab-view.scrollable { overflow-y: auto; padding-bottom: 90px; } /* Space for nav */
+        .tab-view.scrollable { overflow-y: auto; padding-bottom: 90px; }
 
-        /* Leaflet Map Overrides for Dark Mode & Mobile */
-        .leaflet-container {
-            background: #18181b !important;
-            font-family: 'Inter', sans-serif;
-            height: 100%;
-            width: 100%;
-        }
-        .leaflet-control-zoom a {
-            background-color: #27272a !important;
-            color: #f4f4f5 !important;
-            border-color: #3f3f46 !important;
-        }
-        .leaflet-control-attribution { display: none !important; } /* Cleaner mobile UI */
+        /* Map Styles */
+        .leaflet-container { background: #18181b !important; font-family: 'Inter', sans-serif; height: 100%; width: 100%; }
+        .leaflet-control-zoom a { background-color: #27272a !important; color: #f4f4f5 !important; border-color: #3f3f46 !important; }
+        .leaflet-control-attribution { display: none !important; }
         
-        /* Custom Map Pin */
         .custom-pin-wrapper {
-            background: #10b981;
-            border: 3px solid #09090b;
-            border-radius: 50%;
-            width: 32px; height: 32px;
-            display: flex; align-items: center; justify-content: center;
+            background: #10b981; border: 3px solid #09090b; border-radius: 50%;
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .custom-pin-wrapper svg { width: 16px; height: 16px; color: #09090b; }
-        .leaflet-marker-icon.active-pin .custom-pin-wrapper {
-            transform: scale(1.25);
-            background: #f4f4f5;
-            border-color: #10b981;
-        }
+        .leaflet-marker-icon.active-pin .custom-pin-wrapper { transform: scale(1.25); background: #f4f4f5; border-color: #10b981; }
         .leaflet-marker-icon.active-pin .custom-pin-wrapper svg { color: #10b981; }
 
-        /* Smooth Bottom Drawer */
-        #map-drawer {
-            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-        }
+        #map-drawer { transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
     </style>
 </head>
-<body class="antialiased w-full max-w-md mx-auto sm:border-x sm:border-app-border relative shadow-2xl">
+<body class="antialiased w-full max-w-md mx-auto sm:border-x sm:border-app-border relative shadow-2xl bg-app-bg">
 
-    <div id="app-wrapper">
+    <div id="screen-landing" class="app-screen active overflow-y-auto no-scrollbar relative px-6 py-12 flex flex-col justify-center items-center text-center">
+        <div class="absolute top-[-10%] left-[-20%] w-72 h-72 bg-app-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] right-[-20%] w-72 h-72 bg-teal-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+        <div class="animate-fade-in w-full max-w-sm relative z-10">
+            <div class="w-20 h-20 bg-app-card border border-app-border rounded-3xl mx-auto flex items-center justify-center mb-8 shadow-glow transform rotate-3">
+                <i data-lucide="map" class="w-10 h-10 text-app-primary -rotate-3"></i>
+            </div>
+            
+            <h1 class="text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+                The Circular<br><span class="text-app-primary italic">Textile Loop.</span>
+            </h1>
+            
+            <p class="text-app-muted text-base mb-10 leading-relaxed px-2">
+                Discover local tailors, rent event wear, and securely trade campus uniforms within Panabo City.
+            </p>
+
+            <div class="space-y-4 text-left mb-12">
+                <div class="flex items-center gap-4 bg-app-surface/50 p-4 rounded-2xl border border-app-border">
+                    <div class="bg-app-primary/10 p-2 rounded-full"><i data-lucide="map-pin" class="w-5 h-5 text-app-primary"></i></div>
+                    <div>
+                        <h3 class="font-bold text-sm text-white">Interactive GIS</h3>
+                        <p class="text-xs text-app-muted">Find verified tailors and laundry.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 bg-app-surface/50 p-4 rounded-2xl border border-app-border">
+                    <div class="bg-app-primary/10 p-2 rounded-full"><i data-lucide="shirt" class="w-5 h-5 text-app-primary"></i></div>
+                    <div>
+                        <h3 class="font-bold text-sm text-white">Local Exchange</h3>
+                        <p class="text-xs text-app-muted">Peer-to-peer uniform marketplace.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="navigateToScreen('screen-auth')" class="w-full bg-app-primary hover:bg-app-primaryHover text-app-bg py-4 rounded-2xl font-bold text-lg shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-[0.98]">
+                Get Started
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-auth" class="app-screen px-6 py-8 flex flex-col relative overflow-y-auto no-scrollbar">
+        <button onclick="navigateToScreen('screen-landing')" class="absolute top-8 left-6 text-app-muted hover:text-white transition-colors z-20">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+        </button>
+
+        <div class="mt-20 mb-8 animate-fade-in">
+            <h2 class="text-3xl font-extrabold text-white mb-2" id="auth-title">Welcome Back</h2>
+            <p class="text-app-muted text-sm" id="auth-subtitle">Enter your details to access the grid.</p>
+        </div>
+
+        <div class="flex bg-app-surface p-1 rounded-xl mb-8 border border-app-border animate-fade-in">
+            <button onclick="toggleAuth('signin')" id="btn-signin" class="flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all">Sign In</button>
+            <button onclick="toggleAuth('signup')" id="btn-signup" class="flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all">Sign Up</button>
+        </div>
+
+        <div class="space-y-4 animate-fade-in">
+            <div id="field-name" class="hidden">
+                <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Full Name</label>
+                <input type="text" placeholder="John Phillip" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Email Address</label>
+                <div class="relative">
+                    <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
+                    <input type="email" value="philiplatipus@gmail.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Password</label>
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
+                    <input type="password" value="********" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
+                </div>
+            </div>
+        </div>
+
+        <button onclick="mockLogin()" id="auth-action-btn" class="w-full bg-white text-app-bg hover:bg-app-primary hover:text-white py-4 rounded-xl font-bold mt-10 transition-colors shadow-sm animate-fade-in active:scale-[0.98]">
+            Sign In
+        </button>
+    </div>
+
+    <div id="screen-app" class="app-screen">
         <header class="flex-none z-50 bg-app-surface/90 backdrop-blur-xl border-b border-app-border px-5 py-3.5 flex justify-between items-center pb-[env(safe-area-inset-top)]">
             <div class="flex flex-col">
                 <span class="text-[10px] uppercase tracking-widest text-app-primary font-bold mb-0.5">Fabric Grid</span>
@@ -134,7 +214,6 @@
         <main class="main-content bg-app-bg">
             
             <section id="view-map" class="tab-view active">
-                
                 <div class="absolute top-4 left-0 w-full z-[400] px-4 pointer-events-none">
                     <div class="flex gap-2.5 overflow-x-auto no-scrollbar pointer-events-auto pb-2" id="map-filters">
                         <button onclick="filterMap('all', this)" class="shrink-0 rounded-full px-5 py-2 text-xs font-bold transition-all bg-app-primary text-app-bg shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-app-primary">All Spots</button>
@@ -142,9 +221,7 @@
                         <button onclick="filterMap('laundry', this)" class="shrink-0 rounded-full px-5 py-2 text-xs font-semibold transition-all bg-app-surface/90 backdrop-blur text-app-muted border border-app-border hover:text-white">Laundry</button>
                     </div>
                 </div>
-
                 <div id="leaflet-map" class="absolute inset-0 w-full h-full z-0"></div>
-
                 <div class="absolute bottom-6 left-4 right-4 z-[400] pointer-events-none overflow-hidden">
                     <div id="map-drawer" class="bg-app-surface/95 backdrop-blur-xl rounded-[1.5rem] border border-app-border p-5 transform translate-y-[150%] pointer-events-auto shadow-2xl">
                         </div>
@@ -156,20 +233,16 @@
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
                     <input type="text" placeholder="Search uniforms, pageant wear..." class="w-full bg-app-surface border border-app-border rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-app-muted focus:outline-none focus:border-app-primary transition-colors shadow-inner">
                 </div>
-
                 <h2 class="text-lg font-bold text-white mb-4 tracking-tight flex items-center gap-2">
                     <i data-lucide="sparkles" class="w-4 h-4 text-app-primary"></i> Local Exchange
                 </h2>
-
                 <div class="grid grid-cols-2 gap-3.5" id="market-grid">
                     </div>
             </section>
 
             <section id="view-profile" class="tab-view scrollable px-4 py-6">
-                
                 <div class="bg-app-surface rounded-[1.5rem] p-5 border border-app-border relative overflow-hidden shadow-glow mb-6">
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-app-primary/10 rounded-full blur-2xl pointer-events-none"></div>
-                    
                     <div class="flex items-center gap-4 relative z-10">
                         <div class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary flex items-center justify-center text-white font-black text-xl shadow-lg">
                             PM
@@ -182,7 +255,6 @@
                             </span>
                         </div>
                     </div>
-                    
                     <div class="grid grid-cols-3 gap-2 border-t border-app-border mt-5 pt-4">
                         <div class="text-center">
                             <p class="text-lg font-bold text-white">4</p>
@@ -207,10 +279,7 @@
                         <i data-lucide="heart" class="w-4 h-4"></i> Favorites
                     </button>
                 </div>
-
-                <div class="grid grid-cols-2 gap-3.5" id="profile-listings-grid">
-                    </div>
-
+                <div class="grid grid-cols-2 gap-3.5" id="profile-listings-grid"></div>
             </section>
         </main>
 
@@ -233,154 +302,130 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script>
-        // --- 1. DATA MODEL ---
+        // --- DATA MODEL ---
         const AppData = {
             map: null,
             markers: [],
-            activePinId: null,
             vendors: [
                 { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", address: "Panabo City Center", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", icon: "scissors" },
-                { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", address: "Near DNSC Campus", desc: "Same-day eco-friendly washing and ironing. Student discounts available.", icon: "shirt" },
-                { id: 3, name: "Glamour Rentals", type: "tailor", lat: 7.3050, lng: 125.6880, rating: "5.0", address: "National Highway", desc: "High-quality gowns, barongs, and formal wear for defenses and pageants.", icon: "sparkles" }
+                { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", address: "Near DNSC Campus", desc: "Same-day eco-friendly washing and ironing.", icon: "shirt" },
+                { id: 3, name: "Glamour Rentals", type: "tailor", lat: 7.3050, lng: 125.6880, rating: "5.0", address: "National Highway", desc: "High-quality gowns, barongs, and formal wear.", icon: "sparkles" }
             ],
             marketItems: [
-                { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=400", isRent: false, seller: "Gabriel R." },
-                { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=400", isRent: true, seller: "Stitch Master" },
-                { id: 103, title: "Red Pageant Gown", price: "₱1,200", type: "/day", status: "CUSTOM", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=400", isRent: true, seller: "Glamour Rentals" },
-                { id: 104, title: "BSIT Dept. Polo Uniform", price: "₱250", type: "Buy", status: "S | FAIR", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=400", isRent: false, seller: "John Wyne" }
+                { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=400", isRent: false },
+                { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=400", isRent: true },
+                { id: 104, title: "BSIT Dept. Polo Uniform", price: "₱250", type: "Buy", status: "S | FAIR", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=400", isRent: false }
             ],
             userListings: [
-                { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1489987707023-afc82478163c?auto=format&fit=crop&q=80&w=400", isRent: false },
-                { id: 202, title: "Black Formal Slacks", price: "₱200", type: "Buy", status: "W30 | FAIR", img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=400", isRent: false }
+                { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", status: "M | GOOD", img: "https://images.unsplash.com/photo-1489987707023-afc82478163c?auto=format&fit=crop&q=80&w=400", isRent: false }
             ]
         };
 
-        // --- 2. INITIALIZATION ---
+        // --- INIT ---
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
-            initMap();
             renderGrid('market-grid', AppData.marketItems);
             renderGrid('profile-listings-grid', AppData.userListings);
         });
 
-        // --- 3. UI LOGIC: TAB SWITCHING ---
-        function switchTab(tabId, title, btnElement) {
-            document.getElementById('header-title').innerText = title;
+        // --- SCREEN ROUTING ---
+        function navigateToScreen(screenId) {
+            document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
             
-            // Hide all tabs
-            document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
-            
-            // Reset Nav styling
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-app-primary');
-                btn.classList.add('text-app-muted');
-                btn.querySelector('div').classList.remove('bg-app-primary/10');
-                btn.querySelector('div').classList.add('bg-transparent');
-                btn.querySelector('span').classList.remove('font-bold');
-                btn.querySelector('span').classList.add('font-semibold');
-            });
-            
-            // Activate new tab & nav button
-            document.getElementById(`view-${tabId}`).classList.add('active');
-            btnElement.classList.remove('text-app-muted');
-            btnElement.classList.add('text-app-primary');
-            btnElement.querySelector('div').classList.remove('bg-transparent');
-            btnElement.querySelector('div').classList.add('bg-app-primary/10');
-            btnElement.querySelector('span').classList.remove('font-semibold');
-            btnElement.querySelector('span').classList.add('font-bold');
-
-            // CRITICAL: Fix Leaflet sizing issue on mobile when returning to the map tab
-            if (tabId === 'map' && AppData.map) {
-                setTimeout(() => {
-                    AppData.map.invalidateSize();
-                }, 250); // Wait for CSS transition to complete
+            // Lazy load map only when reaching the app screen to prevent rendering bugs
+            if (screenId === 'screen-app' && !AppData.map) {
+                setTimeout(initMap, 100); 
             }
         }
 
-        // --- 4. MAP LOGIC ---
+        // --- AUTH LOGIC ---
+        let authMode = 'signin';
+        function toggleAuth(mode) {
+            authMode = mode;
+            const isSignIn = mode === 'signin';
+            
+            document.getElementById('btn-signin').className = isSignIn ? "flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all" : "flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all";
+            document.getElementById('btn-signup').className = !isSignIn ? "flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all" : "flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all";
+            
+            document.getElementById('auth-title').innerText = isSignIn ? "Welcome Back" : "Create Account";
+            document.getElementById('auth-subtitle').innerText = isSignIn ? "Enter your details to access the grid." : "Join the circular textile movement.";
+            document.getElementById('auth-action-btn').innerText = isSignIn ? "Sign In" : "Sign Up";
+            
+            const nameField = document.getElementById('field-name');
+            if (isSignIn) { nameField.classList.add('hidden'); } else { nameField.classList.remove('hidden'); }
+        }
+
+        function mockLogin() {
+            // Simulate backend call
+            document.getElementById('auth-action-btn').innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>`;
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                document.getElementById('auth-action-btn').innerText = authMode === 'signin' ? "Sign In" : "Sign Up";
+                navigateToScreen('screen-app');
+            }, 800);
+        }
+
+        // --- INNER APP LOGIC (Tabs & Map) ---
+        function switchTab(tabId, title, btnElement) {
+            document.getElementById('header-title').innerText = title;
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-app-primary'); btn.classList.add('text-app-muted');
+                btn.querySelector('div').classList.remove('bg-app-primary/10'); btn.querySelector('div').classList.add('bg-transparent');
+                btn.querySelector('span').classList.remove('font-bold'); btn.querySelector('span').classList.add('font-semibold');
+            });
+            
+            document.getElementById(`view-${tabId}`).classList.add('active');
+            btnElement.classList.remove('text-app-muted'); btnElement.classList.add('text-app-primary');
+            btnElement.querySelector('div').classList.remove('bg-transparent'); btnElement.querySelector('div').classList.add('bg-app-primary/10');
+            btnElement.querySelector('span').classList.remove('font-semibold'); btnElement.querySelector('span').classList.add('font-bold');
+
+            if (tabId === 'map' && AppData.map) { setTimeout(() => AppData.map.invalidateSize(), 250); }
+        }
+
         function initMap() {
-            // Initialize specifically for mobile
-            AppData.map = L.map('leaflet-map', {
-                zoomControl: false, // Move zoom control for mobile
-                tap: false,         // Fixes ghost clicks in some mobile browsers
-                attributionControl: false
-            }).setView([7.3082, 125.6845], 15);
-
-            // Add standard bottom-right zoom control
+            AppData.map = L.map('leaflet-map', { zoomControl: false, tap: false, attributionControl: false }).setView([7.3082, 125.6845], 15);
             L.control.zoom({ position: 'bottomright' }).addTo(AppData.map);
-
-            // CartoDB Dark Matter tiles (Perfect for dark mode)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                maxZoom: 19
-            }).addTo(AppData.map);
-
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(AppData.map);
             renderPins(AppData.vendors);
         }
 
         function createPinIcon(vendor, isActive) {
-            const iconHtml = `<i data-lucide="${vendor.icon}"></i>`;
             return L.divIcon({
                 className: `custom-marker ${isActive ? 'active-pin' : ''}`,
-                html: `<div class="custom-pin-wrapper">${iconHtml}</div>`,
-                iconSize: [32, 32],
-                iconAnchor: [16, 32]
+                html: `<div class="custom-pin-wrapper"><i data-lucide="${vendor.icon}"></i></div>`,
+                iconSize: [32, 32], iconAnchor: [16, 32]
             });
         }
 
         function renderPins(vendors) {
             AppData.markers.forEach(m => AppData.map.removeLayer(m));
             AppData.markers = [];
-
             vendors.forEach(vendor => {
-                const marker = L.marker([vendor.lat, vendor.lng], { 
-                    icon: createPinIcon(vendor, false) 
-                }).addTo(AppData.map);
-                
+                const marker = L.marker([vendor.lat, vendor.lng], { icon: createPinIcon(vendor, false) }).addTo(AppData.map);
                 marker.vendorId = vendor.id;
                 marker.on('click', () => selectVendor(vendor, marker));
                 AppData.markers.push(marker);
             });
-            
-            // Re-initialize icons inside the new DOM elements
             setTimeout(() => lucide.createIcons(), 10);
         }
 
         function filterMap(type, btnElement) {
-            // Update filter pill UI
-            document.querySelectorAll('#map-filters button').forEach(btn => {
-                btn.className = "shrink-0 rounded-full px-5 py-2 text-xs font-semibold transition-all bg-app-surface/90 backdrop-blur text-app-muted border border-app-border hover:text-white";
-            });
+            document.querySelectorAll('#map-filters button').forEach(btn => btn.className = "shrink-0 rounded-full px-5 py-2 text-xs font-semibold transition-all bg-app-surface/90 backdrop-blur text-app-muted border border-app-border hover:text-white");
             btnElement.className = "shrink-0 rounded-full px-5 py-2 text-xs font-bold transition-all bg-app-primary text-app-bg shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-app-primary";
-
-            // Dismiss drawer
             document.getElementById('map-drawer').classList.add('translate-y-[150%]');
-            AppData.activePinId = null;
-
-            if (type === 'all') {
-                renderPins(AppData.vendors);
-                AppData.map.flyTo([7.3082, 125.6845], 15, { duration: 1 });
-            } else {
-                const filtered = AppData.vendors.filter(v => v.type === type);
-                renderPins(filtered);
-                if (filtered.length > 0) {
-                    AppData.map.flyTo([filtered[0].lat, filtered[0].lng], 16, { duration: 1 });
-                }
-            }
+            
+            const filtered = type === 'all' ? AppData.vendors : AppData.vendors.filter(v => v.type === type);
+            renderPins(filtered);
+            if (filtered.length > 0) { AppData.map.flyTo([filtered[0].lat, filtered[0].lng], type === 'all' ? 15 : 16, { duration: 1 }); }
         }
 
-        function selectVendor(vendor, currentMarker) {
-            AppData.activePinId = vendor.id;
-            
-            // Update pin styles
-            AppData.markers.forEach(m => {
-                const v = AppData.vendors.find(x => x.id === m.vendorId);
-                m.setIcon(createPinIcon(v, m.vendorId === vendor.id));
-            });
+        function selectVendor(vendor) {
+            AppData.markers.forEach(m => m.setIcon(createPinIcon(AppData.vendors.find(x => x.id === m.vendorId), m.vendorId === vendor.id)));
             lucide.createIcons();
-
-            // Populate and show drawer
             const drawer = document.getElementById('map-drawer');
             drawer.innerHTML = `
                 <div class="w-12 h-1 bg-app-border rounded-full mx-auto mb-5"></div>
@@ -396,48 +441,34 @@
                 </div>
                 <p class="text-sm text-app-muted leading-relaxed mb-5">${vendor.desc}</p>
                 <div class="flex gap-3">
-                    <button class="flex-1 bg-app-card text-white py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-app-border transition-colors border border-app-border shadow-sm">
+                    <button class="flex-1 bg-app-card text-white py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-app-border border border-app-border">
                         <i data-lucide="message-square" class="w-4 h-4 text-app-muted"></i> Chat
                     </button>
-                    <button class="flex-1 bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg shadow-app-primary/20">
-                        Book Service
-                    </button>
+                    <button class="flex-1 bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center hover:opacity-90">Book Service</button>
                 </div>
             `;
             lucide.createIcons();
             drawer.classList.remove('translate-y-[150%]');
-            
-            // Pan map down slightly so marker is visible above the drawer on small screens
             AppData.map.panTo([vendor.lat - 0.004, vendor.lng], { animate: true, duration: 0.5 }); 
         }
 
-        // --- 5. GRID RENDERING (Market & Profile) ---
         function renderGrid(containerId, items) {
             const grid = document.getElementById(containerId);
-            grid.innerHTML = '';
-            
-            items.forEach(item => {
-                const actionText = item.isRent ? 'Reserve' : 'Buy Now';
-                grid.innerHTML += `
-                    <div class="bg-app-surface rounded-[1.25rem] p-2 border border-app-border flex flex-col h-full shadow-sm">
-                        <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-app-card mb-3">
-                            <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover">
-                            <div class="absolute top-2 left-2 bg-app-bg/80 backdrop-blur-md text-white font-bold text-[9px] px-2 py-1 rounded-lg border border-app-border uppercase tracking-widest">
-                                ${item.status}
-                            </div>
-                        </div>
-                        <div class="px-1 flex flex-col flex-1 pb-1">
-                            <h3 class="font-semibold text-white text-xs leading-snug mb-1 line-clamp-2">${item.title}</h3>
-                            <div class="text-app-primary font-bold text-sm mb-3 mt-auto">
-                                ${item.price} <span class="text-[9px] text-app-muted font-medium uppercase tracking-widest">${item.type}</span>
-                            </div>
-                            <button class="w-full bg-app-card border border-app-border hover:bg-app-primary hover:text-app-bg hover:border-app-primary text-white py-2.5 rounded-xl font-bold text-xs transition-all mt-auto shadow-sm">
-                                ${actionText}
-                            </button>
-                        </div>
+            grid.innerHTML = items.map(item => `
+                <div class="bg-app-surface rounded-[1.25rem] p-2 border border-app-border flex flex-col h-full shadow-sm">
+                    <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-app-card mb-3">
+                        <img src="${item.img}" class="w-full h-full object-cover">
+                        <div class="absolute top-2 left-2 bg-app-bg/80 backdrop-blur-md text-white font-bold text-[9px] px-2 py-1 rounded-lg border border-app-border uppercase tracking-widest">${item.status}</div>
                     </div>
-                `;
-            });
+                    <div class="px-1 flex flex-col flex-1 pb-1">
+                        <h3 class="font-semibold text-white text-xs leading-snug mb-1 line-clamp-2">${item.title}</h3>
+                        <div class="text-app-primary font-bold text-sm mb-3 mt-auto">
+                            ${item.price} <span class="text-[9px] text-app-muted font-medium uppercase tracking-widest">${item.type}</span>
+                        </div>
+                        <button class="w-full bg-app-card border border-app-border hover:bg-app-primary hover:text-app-bg hover:border-app-primary text-white py-2.5 rounded-xl font-bold text-xs transition-all mt-auto">${item.isRent ? 'Reserve' : 'Buy Now'}</button>
+                    </div>
+                </div>
+            `).join('');
         }
     </script>
 </body>
