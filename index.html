@@ -292,24 +292,24 @@
             
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="bg-app-surface border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
-                    <div class="w-24 h-24 bg-app-card border-2 border-app-primary rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white shadow-md">GC</div>
+                    <img src="https://ui-avatars.com/api/?name=Gabriel+R&background=27272a&color=10b981&size=256" alt="Gabriel C. Rusiana" class="w-24 h-24 rounded-full mb-4 object-cover border-2 border-app-primary shadow-md">
                     <h3 class="text-lg font-bold text-white mb-1">Gabriel C. Rusiana</h3>
                     <span class="inline-block px-3 py-1 bg-app-primary/10 text-app-primary text-xs font-bold rounded-full uppercase tracking-wider mb-3">Programmer</span>
                     <p class="text-sm text-app-muted leading-relaxed">Develops the interactive GIS mapping interface and core application architecture.</p>
                 </div>
                 
-                <div class="bg-app-surface border-2 border-app-primary p-6 rounded-3xl text-center flex flex-col items-center transform md:-translate-y-4 shadow-glow">
-                    <div class="w-24 h-24 bg-app-primary border-4 border-app-bg rounded-full mb-4 flex items-center justify-center text-2xl font-black text-app-bg shadow-md">JP</div>
+                <div class="bg-app-surface border-2 border-app-primary p-6 rounded-3xl text-center flex flex-col items-center transform md:-translate-y-4 shadow-glow z-10 relative">
+                    <img src="https://ui-avatars.com/api/?name=John+Phillip&background=10b981&color=09090b&size=256" alt="John Phillip C. Mansera" class="w-28 h-28 rounded-full mb-4 object-cover border-4 border-app-primary shadow-lg bg-app-card">
                     <h3 class="text-lg font-bold text-white mb-1">John Phillip C. Mansera</h3>
-                    <span class="inline-block px-3 py-1 bg-app-bg text-app-primary border border-app-border text-xs font-bold rounded-full uppercase tracking-wider mb-3">System Analyst / PM</span>
-                    <p class="text-sm text-app-muted leading-relaxed">Leads the project vision, manages developmental timelines, and ensures system requirements are met.</p>
+                    <span class="inline-block px-3 py-1 bg-app-primary text-app-bg border border-app-border text-xs font-bold rounded-full uppercase tracking-wider mb-3 shadow-md">System Analyst / PM</span>
+                    <p class="text-sm text-app-muted leading-relaxed">Leads the project vision, manages developmental timelines, and ensures system requirements are met to perfection.</p>
                 </div>
                 
                 <div class="bg-app-surface border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
-                    <div class="w-24 h-24 bg-app-card border-2 border-app-primary rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white shadow-md">JW</div>
+                    <img src="https://ui-avatars.com/api/?name=John+Wyne&background=27272a&color=10b981&size=256" alt="John Wyne A. Tumabiling" class="w-24 h-24 rounded-full mb-4 object-cover border-2 border-app-primary shadow-md">
                     <h3 class="text-lg font-bold text-white mb-1">John Wyne A. Tumabiling</h3>
                     <span class="inline-block px-3 py-1 bg-app-primary/10 text-app-primary text-xs font-bold rounded-full uppercase tracking-wider mb-3">Documentarian</span>
-                    <p class="text-sm text-app-muted leading-relaxed">Handles comprehensive research documentation, UI analysis, and quality assurance.</p>
+                    <p class="text-sm text-app-muted leading-relaxed">Handles comprehensive research documentation, UI analysis, and quality assurance reporting.</p>
                 </div>
             </div>
         </div>
@@ -393,7 +393,7 @@
                 </button>
 
                 <div class="mt-16 mb-8 text-center">
-                    <div class="w-12 h-12 bg-app-primary rounded-lg flex items-center justify-center transform rotate-3 mx-auto mb-4">
+                    <div class="w-12 h-12 bg-app-primary rounded-lg flex items-center justify-center transform rotate-3 mx-auto mb-4 shadow-glow">
                         <i data-lucide="map" class="w-6 h-6 text-app-bg -rotate-3"></i>
                     </div>
                     <h2 class="text-2xl font-extrabold text-white mb-2" id="auth-title">Sign In</h2>
@@ -482,7 +482,7 @@
                     <div class="bg-app-surface rounded-[1.5rem] p-5 border border-app-border relative overflow-hidden shadow-glow mb-6">
                         <div class="absolute -top-10 -right-10 w-32 h-32 bg-app-primary/10 rounded-full blur-2xl pointer-events-none"></div>
                         <div class="flex items-center gap-4 relative z-10">
-                            <div class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary flex items-center justify-center text-white font-black text-xl shadow-lg">JP</div>
+                            <img src="https://ui-avatars.com/api/?name=John+Phillip&background=10b981&color=09090b&size=256" alt="Profile" class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary object-cover shadow-lg">
                             <div class="flex-1">
                                 <h2 class="text-xl font-extrabold text-white leading-tight">John Phillip</h2>
                                 <p class="text-sm text-app-muted font-medium mb-1.5">DNSC • <span class="text-app-primary font-bold">BSIT</span></p>
@@ -522,8 +522,8 @@
                 </div>
             </nav>
             
-            <div id="shop-modal" class="z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
-            <div id="item-modal" class="z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
+            <div id="shop-modal" class="slide-modal z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
+            <div id="item-modal" class="slide-modal z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
             
         </div>
     </div>
@@ -533,22 +533,22 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); });
 
-    // --- DATA MODEL (Fixed Image URLs) ---
+    // --- DATA MODEL (With Highly Reliable Unsplash URLs) ---
     const AppData = {
         map: null, mapInitialized: false, markers: [],
         vendors: [
-            { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", ratingCount: 124, address: "Panabo City Center", price: "₱100 - ₱500", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", fullDesc: "Stitch Master specializes in academic uniforms for DNSC students. We ensure strict compliance with the institute's dress code while providing a comfortable fit.", icon: "scissors", img: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&q=80&w=800" },
-            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", ratingCount: 89, address: "Near DNSC Campus", price: "₱30/kilo", desc: "Same-day eco-friendly washing and ironing.", fullDesc: "Conveniently located near the campus. We handle delicate event wear and heavily soiled uniforms with eco-friendly detergents.", icon: "shirt", img: "https://images.unsplash.com/photo-1582734440784-82cefb31e67c?auto=format&fit=crop&q=80&w=800" },
-            { id: 3, name: "Glamour Rentals", type: "rental", lat: 7.3050, lng: 125.6880, rating: "5.0", ratingCount: 42, address: "National Highway", price: "₱500 - ₱1500/day", desc: "High-quality gowns, barongs, and formal wear.", fullDesc: "Premium rentals for pageants, birthdays, and thesis defenses. Alterations are included in the rental fee to guarantee a perfect fit.", icon: "sparkles", img: "https://images.unsplash.com/photo-1595777457583-95e059f58158?auto=format&fit=crop&q=80&w=800" }
+            { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", ratingCount: 124, address: "Panabo City Center", price: "₱100 - ₱500", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", fullDesc: "Stitch Master specializes in academic uniforms for DNSC students. We ensure strict compliance with the institute's dress code while providing a comfortable fit.", icon: "scissors", img: "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?auto=format&fit=crop&q=80&w=800" },
+            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", ratingCount: 89, address: "Near DNSC Campus", price: "₱30/kilo", desc: "Same-day eco-friendly washing and ironing.", fullDesc: "Conveniently located near the campus. We handle delicate event wear and heavily soiled uniforms with eco-friendly detergents.", icon: "shirt", img: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&q=80&w=800" },
+            { id: 3, name: "Glamour Rentals", type: "rental", lat: 7.3050, lng: 125.6880, rating: "5.0", ratingCount: 42, address: "National Highway", price: "₱500 - ₱1500/day", desc: "High-quality gowns, barongs, and formal wear.", fullDesc: "Premium rentals for pageants, birthdays, and thesis defenses. Alterations are included in the rental fee to guarantee a perfect fit.", icon: "sparkles", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=800" }
         ],
         marketItems: [
-            { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1586363104862-3a5e222eeac0?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "Gabriel C.", desc: "Complete set. Used for only one semester. Washed and ironed, ready to wear." },
+            { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "Gabriel C.", desc: "Complete set. Used for only one semester. Washed and ironed, ready to wear." },
             { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", category: "event", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Stitch Master", desc: "Perfect for capstone defenses. High quality linen, very breathable." },
-            { id: 103, title: "Red Pageant Evening Gown", price: "₱1,200", type: "/day", category: "event", status: "CUSTOM", img: "https://images.unsplash.com/photo-1583845112102-19e48719280b?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Glamour Rentals", desc: "Stunning red silk gown perfect for campus pageants or birthday debuts. Minor alterations included." },
-            { id: 104, title: "BSIT Dept. Polo", price: "₱250", type: "Buy", category: "uniform", status: "S | FAIR", img: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Wyne", desc: "Standard BSIT uniform. Slight fading on the collar but no tears." }
+            { id: 103, title: "Red Pageant Evening Gown", price: "₱1,200", type: "/day", category: "event", status: "CUSTOM", img: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Glamour Rentals", desc: "Stunning red silk gown perfect for campus pageants or birthday debuts. Minor alterations included." },
+            { id: 104, title: "BSIT Dept. Polo", price: "₱250", type: "Buy", category: "uniform", status: "S | FAIR", img: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Wyne", desc: "Standard BSIT uniform. Slight fading on the collar but no tears." }
         ],
         userListings: [
-            { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Phillip", desc: "Complete PE uniform set. Includes shirt and jogging pants." }
+            { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Phillip", desc: "Complete PE uniform set. Includes shirt and jogging pants." }
         ]
     };
 
@@ -671,7 +671,7 @@
                 </div>
             </div>
             <p class="text-sm text-app-muted leading-relaxed mb-4">${vendor.desc}</p>
-            <button onclick="openShopModal(${vendor.id})" class="w-full bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+            <button onclick="openShopModal(${vendor.id})" class="w-full bg-app-primary text-app-bg py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                 View Shop & Book
             </button>
         `;
