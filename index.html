@@ -41,6 +41,7 @@
             -webkit-tap-highlight-color: transparent;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         body.app-active { overflow: hidden; }
@@ -53,6 +54,14 @@
             background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.15), transparent 40%),
                         radial-gradient(circle at bottom left, rgba(20, 184, 166, 0.1), transparent 40%);
         }
+
+        /* Floating Scroll to Top Button */
+        #scroll-top-btn {
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 5000;
+            opacity: 0; pointer-events: none; transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        #scroll-top-btn.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
         /* APP EMULATOR STYLES */
         #app-wrapper {
@@ -103,7 +112,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
+<body id="top">
 
 <div id="landing-wrapper" class="hero-bg">
     
@@ -117,6 +126,7 @@
         <div class="hidden md:flex gap-8 text-sm font-medium text-app-muted">
             <a href="#about" class="hover:text-white transition-colors">About</a>
             <a href="#features" class="hover:text-white transition-colors">Core Features</a>
+            <a href="#download" class="hover:text-white transition-colors">Download</a>
             <a href="#team" class="hover:text-white transition-colors">Our Team</a>
         </div>
         <button onclick="launchApp()" class="bg-white hover:bg-app-primary hover:text-white text-app-bg px-6 py-2.5 rounded-full font-bold text-sm transition-colors shadow-sm">
@@ -283,7 +293,30 @@
         </div>
     </section>
 
-    <section id="team" class="py-24 bg-app-bg border-t border-app-border">
+    <section id="download" class="py-24 bg-app-bg">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Get Fabric Grid: TexMap Today</h2>
+            <p class="text-lg text-app-muted mb-10 max-w-2xl mx-auto">Available on iOS and Android. Join the circular textile movement and start discovering, renting, and trading local garments seamlessly.</p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <button class="w-full sm:w-auto flex items-center justify-center gap-3 bg-app-surface border border-app-border hover:border-app-primary text-white px-8 py-4 rounded-2xl transition-all shadow-sm">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.365 21.442c-1.393.978-2.73.978-4.103.04-3.32-2.316-6.196-6.906-6.196-11.233 0-3.303 1.637-5.12 3.86-5.184 1.48-.04 2.825.96 3.593.96.75 0 2.29-.98 3.96-.826 1.707.098 3.235.82 4.14 2.164-3.344 2.015-2.862 6.702.43 8.01-1.012 2.59-2.613 5.343-5.684 6.069zm-2.45-16.71c.642-2.222-1.042-4.524-3.21-4.732-.823 2.378 1.477 4.79 3.21 4.732z"/></svg>
+                    <div class="text-left">
+                        <div class="text-[10px] uppercase tracking-wider text-app-muted leading-none mb-1">Download on the</div>
+                        <div class="text-lg font-bold leading-none">App Store</div>
+                    </div>
+                </button>
+                <button class="w-full sm:w-auto flex items-center justify-center gap-3 bg-app-surface border border-app-border hover:border-app-primary text-white px-8 py-4 rounded-2xl transition-all shadow-sm">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.609 1.814L13.792 12 3.61 22.186a1.98 1.98 0 0 1-.41-.532A1.954 1.954 0 0 1 3 20.658V3.342c0-.36.068-.7.2-.996.115-.246.254-.42.409-.532zM14.73 12.936l4.137 4.136-11.83 6.786a1.996 1.996 0 0 1-1.85-.098l9.543-10.824zm4.137-5.872L14.73 11.064 5.187.24C5.467.085 5.793 0 6.136 0c.348 0 .68.087.97.247l11.761 6.817zM20.485 8l-1.008-1.008-4.22 4.008 4.22 4.22 1.008-1.008a1.97 1.97 0 0 0 .515-1.106c.01-.137.01-.274 0-.411a1.969 1.969 0 0 0-.515-1.106z"/></svg>
+                    <div class="text-left">
+                        <div class="text-[10px] uppercase tracking-wider text-app-muted leading-none mb-1">GET IT ON</div>
+                        <div class="text-lg font-bold leading-none">Google Play</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="py-24 bg-app-surface border-t border-app-border">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Team</h2>
@@ -291,21 +324,21 @@
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-app-surface border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
+                <div class="bg-app-bg border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
                     <img src="https://ui-avatars.com/api/?name=Gabriel+R&background=27272a&color=10b981&size=256" alt="Gabriel C. Rusiana" class="w-24 h-24 rounded-full mb-4 object-cover border-2 border-app-primary shadow-md">
                     <h3 class="text-lg font-bold text-white mb-1">Gabriel C. Rusiana</h3>
                     <span class="inline-block px-3 py-1 bg-app-primary/10 text-app-primary text-xs font-bold rounded-full uppercase tracking-wider mb-3">Programmer</span>
                     <p class="text-sm text-app-muted leading-relaxed">Develops the interactive GIS mapping interface and core application architecture.</p>
                 </div>
                 
-                <div class="bg-app-surface border-2 border-app-primary p-6 rounded-3xl text-center flex flex-col items-center transform md:-translate-y-4 shadow-glow z-10 relative">
+                <div class="bg-app-bg border-2 border-app-primary p-6 rounded-3xl text-center flex flex-col items-center transform md:-translate-y-4 shadow-glow z-10 relative">
                     <img src="https://ui-avatars.com/api/?name=John+Phillip&background=10b981&color=09090b&size=256" alt="John Phillip C. Mansera" class="w-28 h-28 rounded-full mb-4 object-cover border-4 border-app-primary shadow-lg bg-app-card">
                     <h3 class="text-lg font-bold text-white mb-1">John Phillip C. Mansera</h3>
                     <span class="inline-block px-3 py-1 bg-app-primary text-app-bg border border-app-border text-xs font-bold rounded-full uppercase tracking-wider mb-3 shadow-md">System Analyst / PM</span>
                     <p class="text-sm text-app-muted leading-relaxed">Leads the project vision, manages developmental timelines, and ensures system requirements are met to perfection.</p>
                 </div>
                 
-                <div class="bg-app-surface border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
+                <div class="bg-app-bg border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
                     <img src="https://ui-avatars.com/api/?name=John+Wyne&background=27272a&color=10b981&size=256" alt="John Wyne A. Tumabiling" class="w-24 h-24 rounded-full mb-4 object-cover border-2 border-app-primary shadow-md">
                     <h3 class="text-lg font-bold text-white mb-1">John Wyne A. Tumabiling</h3>
                     <span class="inline-block px-3 py-1 bg-app-primary/10 text-app-primary text-xs font-bold rounded-full uppercase tracking-wider mb-3">Documentarian</span>
@@ -315,7 +348,7 @@
         </div>
     </section>
 
-    <footer class="bg-app-surface border-t border-app-border pt-16 pb-8">
+    <footer class="bg-app-bg border-t border-app-border pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div class="md:col-span-1">
@@ -369,7 +402,7 @@
             
             <div class="border-t border-app-border pt-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-app-muted text-xs">© 2026 Fabric Grid: TexMap by Fabric Grid. All rights reserved.</p>
-                <div class="flex gap-4">
+                <div class="flex gap-4 justify-center">
                     <a href="#" class="text-app-muted hover:text-white"><i data-lucide="facebook" class="w-5 h-5"></i></a>
                     <a href="#" class="text-app-muted hover:text-white"><i data-lucide="twitter" class="w-5 h-5"></i></a>
                     <a href="#" class="text-app-muted hover:text-white"><i data-lucide="instagram" class="w-5 h-5"></i></a>
@@ -377,6 +410,10 @@
             </div>
         </div>
     </footer>
+
+    <a href="#top" id="scroll-top-btn" class="bg-app-primary text-app-bg p-3 rounded-full shadow-glow border border-app-primary hover:bg-white hover:text-app-bg transition-colors">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </a>
 </div>
 
 <div id="app-wrapper">
@@ -533,19 +570,29 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); });
 
+    // --- SCROLL TO TOP LISTENER ---
+    window.addEventListener('scroll', () => {
+        const btn = document.getElementById('scroll-top-btn');
+        if (window.scrollY > 400) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    });
+
     // --- DATA MODEL (With Highly Reliable Unsplash URLs) ---
     const AppData = {
         map: null, mapInitialized: false, markers: [],
         vendors: [
-            { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", ratingCount: 124, address: "Panabo City Center", price: "₱100 - ₱500", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", fullDesc: "Stitch Master specializes in academic uniforms for DNSC students. We ensure strict compliance with the institute's dress code while providing a comfortable fit.", icon: "scissors", img: "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?auto=format&fit=crop&q=80&w=800" },
-            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", ratingCount: 89, address: "Near DNSC Campus", price: "₱30/kilo", desc: "Same-day eco-friendly washing and ironing.", fullDesc: "Conveniently located near the campus. We handle delicate event wear and heavily soiled uniforms with eco-friendly detergents.", icon: "shirt", img: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&q=80&w=800" },
+            { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", ratingCount: 124, address: "Panabo City Center", price: "₱100 - ₱500", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", fullDesc: "Stitch Master specializes in academic uniforms for DNSC students. We ensure strict compliance with the institute's dress code while providing a comfortable fit.", icon: "scissors", img: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&q=80&w=800" },
+            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", ratingCount: 89, address: "Near DNSC Campus", price: "₱30/kilo", desc: "Same-day eco-friendly washing and ironing.", fullDesc: "Conveniently located near the campus. We handle delicate event wear and heavily soiled uniforms with eco-friendly detergents.", icon: "shirt", img: "https://images.unsplash.com/photo-1582734440784-82cefb31e67c?auto=format&fit=crop&q=80&w=800" },
             { id: 3, name: "Glamour Rentals", type: "rental", lat: 7.3050, lng: 125.6880, rating: "5.0", ratingCount: 42, address: "National Highway", price: "₱500 - ₱1500/day", desc: "High-quality gowns, barongs, and formal wear.", fullDesc: "Premium rentals for pageants, birthdays, and thesis defenses. Alterations are included in the rental fee to guarantee a perfect fit.", icon: "sparkles", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=800" }
         ],
         marketItems: [
-            { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "Gabriel C.", desc: "Complete set. Used for only one semester. Washed and ironed, ready to wear." },
+            { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "Gabriel C.", desc: "Complete set. Used for only one semester. Washed and ironed, ready to wear." },
             { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", category: "event", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Stitch Master", desc: "Perfect for capstone defenses. High quality linen, very breathable." },
             { id: 103, title: "Red Pageant Evening Gown", price: "₱1,200", type: "/day", category: "event", status: "CUSTOM", img: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Glamour Rentals", desc: "Stunning red silk gown perfect for campus pageants or birthday debuts. Minor alterations included." },
-            { id: 104, title: "BSIT Dept. Polo", price: "₱250", type: "Buy", category: "uniform", status: "S | FAIR", img: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Wyne", desc: "Standard BSIT uniform. Slight fading on the collar but no tears." }
+            { id: 104, title: "BSIT Dept. Polo", price: "₱250", type: "Buy", category: "uniform", status: "S | FAIR", img: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Wyne", desc: "Standard BSIT uniform. Slight fading on the collar but no tears." }
         ],
         userListings: [
             { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Phillip", desc: "Complete PE uniform set. Includes shirt and jogging pants." }
