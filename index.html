@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -28,23 +28,8 @@
                             muted: '#a1a1aa'
                         }
                     },
-                    boxShadow: {
-                        'glow': '0 0 20px rgba(16, 185, 129, 0.15)',
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.4s ease-out forwards',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    }
+                    boxShadow: { 'glow': '0 0 30px rgba(16, 185, 129, 0.2)', },
+                    animation: { 'fade-in': 'fadeIn 0.4s ease-out forwards', }
                 }
             }
         }
@@ -55,299 +40,375 @@
     <style>
         :root { color-scheme: dark; }
         
+        /* Global Reset */
         body {
             background-color: #09090b; color: #f4f4f5;
+            margin: 0; padding: 0;
             -webkit-tap-highlight-color: transparent;
-            margin: 0; padding: 0; overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
+
+        /* Prevent background scrolling when app is active */
+        body.app-active { overflow: hidden; }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- HYBRID ROUTING --- */
-        .master-view { display: none; width: 100vw; height: 100dvh; }
-        .master-view.active { display: block; animation: fade-in 0.4s ease forwards; }
-
-        /* --- APP EMULATOR (Desktop Frame vs Mobile Full) --- */
-        #app-frame-container {
-            background-color: #000000;
-            display: none; align-items: center; justify-content: center;
+        /* ========================================= */
+        /* LANDING PAGE STYLES                       */
+        /* ========================================= */
+        #landing-wrapper {
+            width: 100%; min-height: 100vh;
+            transition: opacity 0.4s ease;
         }
-        #app-frame-container.active { display: flex; animation: fade-in 0.4s ease forwards; }
+        .hero-bg {
+            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(20, 184, 166, 0.05), transparent 40%);
+        }
+
+        /* ========================================= */
+        /* APP EMULATOR STYLES (The Mobile Frame)    */
+        /* ========================================= */
+        #app-wrapper {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        #app-wrapper.active { display: flex; opacity: 1; }
 
         #app-frame {
-            position: relative; width: 100%; height: 100%;
-            background-color: #09090b; display: flex; flex-direction: column;
-            overflow: hidden;
+            width: 100%; height: 100%;
+            background-color: #09090b;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
         }
 
+        /* Desktop specific styles for the emulator */
         @media (min-width: 640px) {
             #app-frame {
-                max-width: 400px; height: 850px; max-height: 95vh;
-                border-radius: 2.5rem; border: 6px solid #27272a;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                max-width: 390px; height: 844px; max-height: 90vh;
+                border-radius: 2.5rem; border: 8px solid #27272a;
+                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px #3f3f46;
             }
         }
 
-        /* --- APP INNER LOGIC --- */
-        .inner-screen { display: none; flex-direction: column; height: 100%; width: 100%; }
-        .inner-screen.active { display: flex; animation: fade-in 0.3s ease forwards; }
+        /* Inner App Routing */
+        .app-screen { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .app-screen.active { display: flex; animation: fadeIn 0.3s ease forwards; }
+
         .workspace { flex: 1; position: relative; overflow-y: auto; overflow-x: hidden; }
         .tab-view { display: none; padding-bottom: 90px; }
-        .tab-view.active { display: block; animation: fade-in 0.2s ease forwards; }
+        .tab-view.active { display: block; animation: fadeIn 0.2s ease forwards; }
         #view-map { padding-bottom: 0; height: 100%; display: none; }
         #view-map.active { display: block; }
 
-        /* --- MODALS & MAP --- */
-        .slide-modal {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #09090b; z-index: 1000;
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-            display: flex; flex-direction: column; overflow-y: auto;
-        }
-        .slide-modal.open { transform: translateY(0); }
-        .leaflet-container { background: #18181b !important; font-family: 'Inter', sans-serif; height: 100%; width: 100%; z-index: 1;}
+        /* Leaflet Overrides */
+        .leaflet-container { background: #18181b !important; height: 100%; width: 100%; z-index: 1;}
         .leaflet-control-zoom { border: none !important; margin-bottom: 100px !important; }
         .leaflet-control-zoom a { background-color: #27272a !important; color: #f4f4f5 !important; border: 1px solid #3f3f46 !important; }
         .leaflet-control-attribution { display: none !important; }
-        .custom-pin-wrapper { background: #10b981; border: 3px solid #09090b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); transition: transform 0.2s ease; }
+        
+        .custom-pin-wrapper {
+            background: #10b981; border: 3px solid #09090b; border-radius: 50%;
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); transition: transform 0.2s ease;
+        }
         .custom-pin-wrapper svg { width: 16px; height: 16px; color: #09090b; }
         .leaflet-marker-icon.active-pin .custom-pin-wrapper { transform: scale(1.25); background: #f4f4f5; border-color: #10b981; }
         .leaflet-marker-icon.active-pin .custom-pin-wrapper svg { color: #10b981; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="master-landing" class="master-view active overflow-y-auto w-full">
+<div id="landing-wrapper" class="hero-bg">
     
-    <nav class="fixed w-full z-50 bg-app-bg/80 backdrop-blur-xl border-b border-app-border">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-app-primary rounded-lg flex items-center justify-center text-app-bg"><i data-lucide="map" class="w-5 h-5"></i></div>
-                <span class="text-xl font-extrabold tracking-tight">Fabric Grid<span class="text-app-primary">.</span></span>
+    <nav class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center relative z-10">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-app-primary rounded-lg flex items-center justify-center transform rotate-3">
+                <i data-lucide="map" class="w-5 h-5 text-app-bg -rotate-3"></i>
             </div>
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-app-muted">
-                <a href="#challenge" class="hover:text-white transition-colors">The Challenge</a>
-                <a href="#features" class="hover:text-white transition-colors">Features</a>
-                <a href="#team" class="hover:text-white transition-colors">Our Team</a>
-            </div>
-            <button onclick="launchApp()" class="bg-white text-app-bg px-5 py-2.5 rounded-full font-bold text-sm hover:bg-app-primary hover:text-white transition-colors shadow-sm">
-                Launch App
-            </button>
+            <span class="text-xl font-bold tracking-tight text-white">Fabric Grid<span class="text-app-primary">.</span></span>
         </div>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-app-muted">
+            <a href="#challenge" class="hover:text-white transition-colors">The Challenge</a>
+            <a href="#features" class="hover:text-white transition-colors">Features</a>
+            <a href="#team" class="hover:text-white transition-colors">Our Team</a>
+        </div>
+        <button onclick="launchApp()" class="bg-white hover:bg-app-primary hover:text-white text-app-bg px-5 py-2.5 rounded-full font-bold text-sm transition-colors shadow-sm">
+            Launch App
+        </button>
     </nav>
 
-    <section class="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 max-w-7xl mx-auto overflow-hidden flex flex-col md:flex-row items-center">
-        <div class="absolute top-20 left-[-10%] w-96 h-96 bg-app-primary/20 rounded-full blur-[100px] pointer-events-none"></div>
-        <div class="md:w-1/2 relative z-10 text-center md:text-left">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-app-card border border-app-border text-xs font-bold text-app-primary mb-6 uppercase tracking-widest">
-                <span class="w-2 h-2 rounded-full bg-app-primary animate-pulse"></span> Panabo City, Ph
-            </div>
+    <header class="max-w-7xl mx-auto px-6 pt-20 pb-32 flex flex-col lg:flex-row items-center gap-16 relative z-10">
+        <div class="flex-1 text-center lg:text-left">
+            <span class="inline-block py-1.5 px-4 rounded-full bg-app-surface border border-app-border text-app-primary text-xs font-bold tracking-widest uppercase mb-6">
+                Panabo City Pilot
+            </span>
             <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
-                The Circular <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-app-primary to-teal-400 italic">Textile Loop.</span>
+                The Circular <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-app-primary to-teal-400 italic">Textile Loop.</span>
             </h1>
-            <p class="text-lg text-app-muted mb-8 leading-relaxed max-w-xl mx-auto md:mx-0">
-                A localized ecosystem to discover expert tailors, rent elegant event wear, and securely trade student uniforms. Built for sustainability. Built for students.
+            <p class="text-lg md:text-xl text-app-muted mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                Empowering students and locals to locate expert tailors, rent elegant event wear, and securely trade campus uniforms through a localized GIS platform.
             </p>
-            <div class="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
-                <button onclick="launchApp()" class="w-full sm:w-auto bg-app-primary hover:bg-app-primaryHover text-app-bg px-8 py-4 rounded-full font-bold text-lg shadow-glow transition-all hover:-translate-y-1">
-                    Get Started Free
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <button onclick="launchApp()" class="bg-app-primary hover:bg-app-primaryHover text-app-bg px-8 py-4 rounded-full font-bold text-lg shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2">
+                    Open Web App <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </button>
-                <a href="#features" class="w-full sm:w-auto bg-app-card hover:bg-app-surface text-white px-8 py-4 rounded-full font-bold text-lg border border-app-border transition-all">
-                    Explore Features
+                <a href="#features" class="bg-app-surface hover:bg-app-card text-white border border-app-border px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center">
+                    Learn More
                 </a>
             </div>
         </div>
-        <div class="md:w-1/2 mt-16 md:mt-0 relative z-10 flex justify-center animate-float">
-            <div class="w-[280px] h-[580px] bg-app-surface rounded-[2.5rem] border-[8px] border-app-card shadow-2xl relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-50 grayscale">
-                <div class="absolute bottom-4 left-4 right-4 bg-app-card/90 backdrop-blur p-4 rounded-2xl border border-app-border">
-                    <h3 class="font-bold text-white mb-1">Stitch Master</h3>
-                    <p class="text-xs text-app-primary">Tailor • Panabo City</p>
-                    <button class="w-full bg-app-primary text-app-bg mt-3 py-2 rounded-xl font-bold text-xs">Book Service</button>
+        
+        <div class="flex-1 w-full max-w-md lg:max-w-full relative">
+            <div class="absolute inset-0 bg-app-primary/20 blur-[100px] rounded-full"></div>
+            <div class="relative bg-app-card border border-app-border rounded-[2rem] p-4 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1200" alt="Map Preview" class="rounded-[1.5rem] w-full h-[400px] object-cover grayscale-[0.3] opacity-80">
+                <div class="absolute bottom-10 left-10 right-10 bg-app-bg/90 backdrop-blur-md border border-app-border rounded-2xl p-4 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-app-primary rounded-full flex items-center justify-center"><i data-lucide="scissors" class="text-app-bg w-6 h-6"></i></div>
+                    <div>
+                        <h4 class="text-white font-bold">Stitch Master</h4>
+                        <p class="text-app-muted text-xs">Expert uniform alterations.</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </header>
 
-    <section id="challenge" class="py-20 bg-app-surface border-y border-app-border relative">
+    <section id="challenge" class="py-24 bg-app-surface border-y border-app-border relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 relative z-10">
             <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Why TexMap Exists</h2>
-                <p class="text-app-muted">The traditional textile lifecycle is broken. We are solving local problems with community-driven solutions.</p>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">The Challenge</h2>
+                <div class="w-16 h-1 bg-app-primary mx-auto rounded-full"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <p class="text-lg text-app-muted leading-relaxed mb-6">
+                        Fast fashion and the single-use nature of event wear contribute heavily to environmental waste. Locally, students consistently struggle to find affordable campus uniforms, while expert tailors and rental shops lack the digital visibility to reach them.
+                    </p>
+                    <p class="text-lg text-white font-medium leading-relaxed border-l-4 border-app-primary pl-6">
+                        Fabric Grid: TexMap exists to bridge this gap. We are building a localized, digital circular economy that keeps textiles in use longer, supporting both students and small businesses in Panabo City.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border text-center">
+                        <i data-lucide="leaf" class="w-8 h-8 text-app-primary mx-auto mb-3"></i>
+                        <h3 class="text-white font-bold mb-1">Sustainability</h3>
+                        <p class="text-xs text-app-muted">Reducing textile waste.</p>
+                    </div>
+                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border text-center mt-8">
+                        <i data-lucide="users" class="w-8 h-8 text-app-primary mx-auto mb-3"></i>
+                        <h3 class="text-white font-bold mb-1">Community</h3>
+                        <p class="text-xs text-app-muted">Peer-to-peer exchange.</p>
+                    </div>
+                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border text-center -mt-8">
+                        <i data-lucide="store" class="w-8 h-8 text-app-primary mx-auto mb-3"></i>
+                        <h3 class="text-white font-bold mb-1">Visibility</h3>
+                        <p class="text-xs text-app-muted">Empowering local tailors.</p>
+                    </div>
+                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border text-center">
+                        <i data-lucide="map" class="w-8 h-8 text-app-primary mx-auto mb-3"></i>
+                        <h3 class="text-white font-bold mb-1">Accessibility</h3>
+                        <p class="text-xs text-app-muted">Spatial mapping (GIS).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-24 bg-app-bg">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Core Features</h2>
+                <p class="text-app-muted">What we offer to the Panabo City community.</p>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-app-bg p-8 rounded-3xl border border-app-border">
-                    <div class="w-12 h-12 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center mb-6"><i data-lucide="trash-2" class="w-6 h-6"></i></div>
-                    <h3 class="text-xl font-bold mb-3">Textile Waste</h3>
-                    <p class="text-sm text-app-muted leading-relaxed">Thousands of perfectly good uniforms and garments end up in landfills every year after students graduate or outgrow them.</p>
+                <div class="bg-app-surface border border-app-border p-8 rounded-3xl hover:border-app-primary transition-colors duration-300">
+                    <div class="w-14 h-14 bg-app-card rounded-2xl flex items-center justify-center mb-6 shadow-glow">
+                        <i data-lucide="map-pin" class="text-app-primary w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Interactive GIS Map</h3>
+                    <p class="text-app-muted leading-relaxed">
+                        A real-time spatial map allowing users to pinpoint and verify local tailors, laundry services, and repair shops instantly.
+                    </p>
                 </div>
-                <div class="bg-app-bg p-8 rounded-3xl border border-app-border">
-                    <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center mb-6"><i data-lucide="coins" class="w-6 h-6"></i></div>
-                    <h3 class="text-xl font-bold mb-3">High Academic Costs</h3>
-                    <p class="text-sm text-app-muted leading-relaxed">Purchasing brand new uniforms and renting expensive formal wear for single-day events (like capstones) is a financial burden on students.</p>
+                <div class="bg-app-surface border border-app-border p-8 rounded-3xl hover:border-app-primary transition-colors duration-300">
+                    <div class="w-14 h-14 bg-app-card rounded-2xl flex items-center justify-center mb-6 shadow-glow">
+                        <i data-lucide="shopping-bag" class="text-app-primary w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Circular Marketplace</h3>
+                    <p class="text-app-muted leading-relaxed">
+                        A dedicated feed to rent high-value event wear or buy/sell campus uniforms safely with other verified students.
+                    </p>
                 </div>
-                <div class="bg-app-bg p-8 rounded-3xl border border-app-border">
-                    <div class="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center mb-6"><i data-lucide="map-pin-off" class="w-6 h-6"></i></div>
-                    <h3 class="text-xl font-bold mb-3">Scattered Services</h3>
-                    <p class="text-sm text-app-muted leading-relaxed">Finding reliable, affordable local tailors for repairs or alterations relies on word-of-mouth rather than a verified digital network.</p>
+                <div class="bg-app-surface border border-app-border p-8 rounded-3xl hover:border-app-primary transition-colors duration-300">
+                    <div class="w-14 h-14 bg-app-card rounded-2xl flex items-center justify-center mb-6 shadow-glow">
+                        <i data-lucide="user" class="text-app-primary w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">User Dashboard</h3>
+                    <p class="text-app-muted leading-relaxed">
+                        Manage your active listings, track your favorites, and monitor your personal contribution to reducing textile waste.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="features" class="py-24 px-6 max-w-7xl mx-auto">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-            <span class="text-app-primary font-bold tracking-widest text-xs uppercase">Our Solution</span>
-            <h2 class="text-3xl md:text-5xl font-extrabold mt-2 mb-4">Core Features</h2>
-        </div>
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-app-surface p-10 rounded-[2.5rem] border border-app-border flex flex-col justify-center">
-                <div class="w-14 h-14 bg-app-primary/10 text-app-primary rounded-2xl flex items-center justify-center mb-6"><i data-lucide="map" class="w-7 h-7"></i></div>
-                <h3 class="text-3xl font-bold mb-4">Interactive GIS Mapping</h3>
-                <p class="text-app-muted leading-relaxed mb-6">Instantly locate verified tailors, laundry services, and rental boutiques in Panabo City. View shop ratings, read community reviews, and directly book services without leaving the app.</p>
-            </div>
-            <div class="bg-app-card p-10 rounded-[2.5rem] border border-app-border relative overflow-hidden h-80 md:h-auto">
-                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover opacity-30 grayscale">
-                <div class="absolute inset-0 bg-gradient-to-t from-app-card to-transparent"></div>
-            </div>
-            <div class="bg-app-card p-10 rounded-[2.5rem] border border-app-border relative overflow-hidden h-80 md:h-auto order-last md:order-none">
-                <img src="https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover opacity-20">
-                <div class="absolute inset-0 bg-gradient-to-t from-app-card to-transparent"></div>
-            </div>
-            <div class="bg-app-surface p-10 rounded-[2.5rem] border border-app-border flex flex-col justify-center">
-                <div class="w-14 h-14 bg-app-primary/10 text-app-primary rounded-2xl flex items-center justify-center mb-6"><i data-lucide="shopping-bag" class="w-7 h-7"></i></div>
-                <h3 class="text-3xl font-bold mb-4">Circular Marketplace</h3>
-                <p class="text-app-muted leading-relaxed mb-6">A dedicated peer-to-peer exchange for students. Safely buy, sell, or rent campus uniforms and pageant wear. Reduce waste and save money through community commerce.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="team" class="py-20 bg-app-surface border-y border-app-border">
+    <section id="team" class="py-24 bg-app-surface border-t border-app-border">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-extrabold mb-4">The Innovators</h2>
-                <p class="text-app-muted">Meet the academic team behind Fabric Grid: TexMap.</p>
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Our Team</h2>
+                <p class="text-app-muted">The developers behind the Capstone Project.</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                <div class="bg-app-bg p-6 rounded-[2rem] border border-app-border text-center hover:-translate-y-2 transition-transform">
-                    <div class="w-24 h-24 mx-auto bg-app-card border-4 border-app-surface rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white shadow-xl">JM</div>
-                    <h3 class="text-lg font-bold text-white">John Phillip C. Mansera</h3>
-                    <p class="text-xs text-app-primary font-bold uppercase tracking-widest mt-1">Project Manager / System Analyst</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-app-bg border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
+                    <div class="w-24 h-24 bg-app-card border-2 border-app-primary rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white">JP</div>
+                    <h3 class="text-lg font-bold text-white mb-1">John Phillip C. Mansera</h3>
+                    <span class="inline-block px-3 py-1 bg-app-primary/10 text-app-primary text-xs font-bold rounded-full uppercase tracking-wider">System Analyst / PM</span>
                 </div>
-                <div class="bg-app-bg p-6 rounded-[2rem] border border-app-border text-center hover:-translate-y-2 transition-transform">
-                    <div class="w-24 h-24 mx-auto bg-app-card border-4 border-app-surface rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white shadow-xl">GR</div>
-                    <h3 class="text-lg font-bold text-white">Gabriel C. Rusiana</h3>
-                    <p class="text-xs text-app-primary font-bold uppercase tracking-widest mt-1">Lead Programmer</p>
+                <div class="bg-app-bg border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
+                    <div class="w-24 h-24 bg-app-card border-2 border-app-primary rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white">GC</div>
+                    <h3 class="text-lg font-bold text-white mb-1">Gabriel C. Rusiana</h3>
+                    <span class="inline-block px-3 py-1 bg-app-primary/10 text-app-primary text-xs font-bold rounded-full uppercase tracking-wider">Programmer</span>
                 </div>
-                <div class="bg-app-bg p-6 rounded-[2rem] border border-app-border text-center hover:-translate-y-2 transition-transform">
-                    <div class="w-24 h-24 mx-auto bg-app-card border-4 border-app-surface rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white shadow-xl">JT</div>
-                    <h3 class="text-lg font-bold text-white">John Wyne A. Tumabiling</h3>
-                    <p class="text-xs text-app-primary font-bold uppercase tracking-widest mt-1">Documentarian</p>
+                <div class="bg-app-bg border border-app-border p-6 rounded-3xl text-center flex flex-col items-center">
+                    <div class="w-24 h-24 bg-app-card border-2 border-app-primary rounded-full mb-4 flex items-center justify-center text-2xl font-black text-white">JW</div>
+                    <h3 class="text-lg font-bold text-white mb-1">John Wyne A. Tumabiling</h3>
+                    <span class="inline-block px-3 py-1 bg-app-primary/10 text-app-primary text-xs font-bold rounded-full uppercase tracking-wider">Documentarian</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="bg-[#050505] pt-20 pb-10 px-6 border-t border-app-border">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-            <div class="col-span-1 md:col-span-2 lg:col-span-1">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-6 h-6 bg-app-primary rounded flex items-center justify-center text-app-bg"><i data-lucide="map" class="w-3 h-3"></i></div>
-                    <span class="text-lg font-extrabold tracking-tight">Fabric Grid<span class="text-app-primary">.</span></span>
+    <footer class="bg-app-bg border-t border-app-border pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="map" class="w-6 h-6 text-app-primary"></i>
+                        <span class="text-xl font-bold text-white">Fabric Grid</span>
+                    </div>
+                    <p class="text-app-muted text-sm leading-relaxed">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+                    </p>
                 </div>
-                <p class="text-sm text-app-muted leading-relaxed">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-app-muted">
+                        <li><a href="#" class="hover:text-app-primary transition-colors">About Us</a></li>
+                        <li><a href="#features" class="hover:text-app-primary transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-app-primary transition-colors">Download</a></li>
+                        <li><a href="#" class="hover:text-app-primary transition-colors">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm text-app-muted">
+                        <li><a href="#" class="hover:text-app-primary transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-app-primary transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-app-primary transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-app-primary transition-colors">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Contact</h4>
+                    <ul class="space-y-3 text-sm text-app-muted">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="mail" class="w-4 h-4 mt-0.5 text-app-primary"></i>
+                            aap.technopreneurs@gmail.com
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="phone" class="w-4 h-4 mt-0.5 text-app-primary"></i>
+                            +63 123 456 7890
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="map-pin" class="w-4 h-4 mt-0.5 text-app-primary flex-shrink-0"></i>
+                            Panabo City, Davao del Norte, Philippines, 8105
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <h4 class="font-bold text-white mb-4">Quick Links</h4>
-                <ul class="space-y-2 text-sm text-app-muted">
-                    <li><a href="#" class="hover:text-app-primary transition-colors">About Us</a></li>
-                    <li><a href="#features" class="hover:text-app-primary transition-colors">Features</a></li>
-                    <li><a href="#" class="hover:text-app-primary transition-colors">Download</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold text-white mb-4">Support & Resources</h4>
-                <ul class="space-y-2 text-sm text-app-muted">
-                    <li><a href="#" class="hover:text-app-primary transition-colors">Help Center</a></li>
-                    <li><a href="#" class="hover:text-app-primary transition-colors">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-app-primary transition-colors">Terms of Service</a></li>
-                    <li><a href="#" class="hover:text-app-primary transition-colors">FAQs</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold text-white mb-4">Contact</h4>
-                <ul class="space-y-3 text-sm text-app-muted">
-                    <li class="flex items-start gap-2"><i data-lucide="mail" class="w-4 h-4 mt-0.5 text-app-primary shrink-0"></i> aap.technopreneurs@gmail.com</li>
-                    <li class="flex items-start gap-2"><i data-lucide="phone" class="w-4 h-4 mt-0.5 text-app-primary shrink-0"></i> +63 123 456 7890</li>
-                    <li class="flex items-start gap-2"><i data-lucide="map-pin" class="w-4 h-4 mt-0.5 text-app-primary shrink-0"></i> Panabo City, Davao del Norte, Philippines, 8105</li>
-                </ul>
-            </div>
-        </div>
-        <div class="max-w-7xl mx-auto pt-8 border-t border-app-border text-center text-xs text-app-muted flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>© 2026 Fabric Grid: TexMap by Fabric Grid. All rights reserved.</p>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-white"><i data-lucide="facebook" class="w-4 h-4"></i></a>
-                <a href="#" class="hover:text-white"><i data-lucide="twitter" class="w-4 h-4"></i></a>
-                <a href="#" class="hover:text-white"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+            
+            <div class="border-t border-app-border pt-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-app-muted text-xs">© 2026 Fabric Grid:TexMap by Fabric Grid. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="text-app-muted hover:text-white"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-app-muted hover:text-white"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-app-muted hover:text-white"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                </div>
             </div>
         </div>
     </footer>
 </div>
 
-<div id="app-frame-container" class="master-view">
+<div id="app-wrapper">
+    <button onclick="closeApp()" class="absolute top-6 right-6 text-white bg-app-card p-3 rounded-full border border-app-border hover:bg-app-surface z-[10000] hidden sm:block">
+        <i data-lucide="x" class="w-6 h-6"></i>
+    </button>
+
     <div id="app-frame">
+        
+        <div id="screen-auth" class="app-screen active overflow-y-auto no-scrollbar bg-app-bg">
+            <div class="flex-1 flex flex-col px-6 py-8 relative">
+                <button onclick="closeApp()" class="absolute top-6 left-6 text-app-muted hover:text-white transition-colors z-20 sm:hidden">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                </button>
 
-        <div id="screen-auth" class="inner-screen active overflow-y-auto no-scrollbar px-6 py-8">
-            <button onclick="exitApp()" class="absolute top-6 left-6 text-app-muted hover:text-white transition-colors z-20">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-
-            <div class="mt-16 mb-8">
-                <h2 class="text-3xl font-extrabold text-white mb-2" id="auth-title">Welcome Back</h2>
-                <p class="text-app-muted text-sm" id="auth-subtitle">Enter your details to access the grid.</p>
-            </div>
-
-            <div class="flex bg-app-surface p-1 rounded-xl mb-8 border border-app-border">
-                <button onclick="toggleAuth('signin')" id="btn-signin" class="flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all">Sign In</button>
-                <button onclick="toggleAuth('signup')" id="btn-signup" class="flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all">Sign Up</button>
-            </div>
-
-            <div class="space-y-4">
-                <div id="field-name" class="hidden">
-                    <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Full Name</label>
-                    <input type="text" placeholder="John Phillip" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
+                <div class="mt-16 mb-8">
+                    <h2 class="text-3xl font-extrabold text-white mb-2" id="auth-title">Welcome Back</h2>
+                    <p class="text-app-muted text-sm" id="auth-subtitle">Enter your details to access the grid.</p>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Email Address</label>
-                    <div class="relative">
-                        <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                        <input type="email" value="philiplatipus@gmail.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
+
+                <div class="flex bg-app-surface p-1 rounded-xl mb-8 border border-app-border">
+                    <button onclick="toggleAuth('signin')" id="btn-signin" class="flex-1 py-2 rounded-lg text-sm font-bold bg-app-card text-white shadow-sm transition-all">Sign In</button>
+                    <button onclick="toggleAuth('signup')" id="btn-signup" class="flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all">Sign Up</button>
+                </div>
+
+                <div class="space-y-4">
+                    <div id="field-name" class="hidden">
+                        <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Full Name</label>
+                        <input type="text" placeholder="John Phillip" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Email Address</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
+                            <input type="email" value="philiplatipus@gmail.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Password</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
+                            <input type="password" value="********" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary">
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Password</label>
-                    <div class="relative">
-                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                        <input type="password" value="********" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary transition-colors">
-                    </div>
-                </div>
-            </div>
 
-            <button onclick="mockLogin()" id="auth-action-btn" class="w-full bg-white text-app-bg hover:bg-app-primary hover:text-white py-4 rounded-xl font-bold mt-auto mb-4 transition-colors shadow-sm active:scale-[0.98]">
-                Sign In
-            </button>
+                <button onclick="mockLogin()" id="auth-action-btn" class="w-full bg-white text-app-bg hover:bg-app-primary hover:text-white py-4 rounded-xl font-bold mt-auto mb-4 transition-colors shadow-sm active:scale-[0.98]">
+                    Sign In
+                </button>
+            </div>
         </div>
 
-        <div id="screen-app" class="inner-screen relative bg-app-bg">
-            <header class="flex-none z-50 bg-app-surface/90 backdrop-blur-xl border-b border-app-border px-5 py-3.5 flex justify-between items-center pt-[max(0.875rem,env(safe-area-inset-top))]">
+        <div id="screen-app" class="app-screen relative bg-app-bg">
+            <header class="flex-none z-50 bg-app-surface/90 backdrop-blur-xl border-b border-app-border px-5 py-3.5 flex justify-between items-center">
                 <div class="flex flex-col">
                     <span class="text-[10px] uppercase tracking-widest text-app-primary font-bold mb-0.5">Fabric Grid</span>
                     <h1 class="text-xl font-extrabold leading-none tracking-tight text-white" id="header-title">Map</h1>
                 </div>
                 <div class="flex items-center gap-1.5 bg-app-card px-3 py-1.5 rounded-full border border-app-border shadow-inner">
                     <i data-lucide="map-pin" class="w-3.5 h-3.5 text-app-primary"></i>
-                    <span class="text-xs font-semibold text-app-text">Panabo City</span>
+                    <span class="text-xs font-semibold text-app-text">Panabo</span>
                 </div>
             </header>
 
@@ -361,35 +422,40 @@
                             <button onclick="filterMap('laundry', this)" class="shrink-0 rounded-full px-5 py-2 text-xs font-semibold transition-all bg-app-surface/90 backdrop-blur text-app-muted border border-app-border hover:text-white">Laundry</button>
                         </div>
                     </div>
-                    <div id="leaflet-map" class="absolute inset-0 w-full h-full z-[0]"></div>
+                    
+                    <div id="leaflet-map" class="absolute inset-0 w-full h-full"></div>
+                    
                     <div class="absolute bottom-4 left-4 right-4 z-[500] pointer-events-none overflow-hidden pb-[80px]">
-                        <div id="map-drawer" class="bg-app-surface/95 backdrop-blur-xl rounded-[1.5rem] border border-app-border p-5 transform translate-y-[150%] pointer-events-auto shadow-2xl transition-transform duration-300"></div>
+                        <div id="map-drawer" class="bg-app-surface/95 backdrop-blur-xl rounded-[1.5rem] border border-app-border p-5 transform translate-y-[150%] pointer-events-auto shadow-2xl transition-transform duration-300">
+                            </div>
                     </div>
                 </div>
 
-                <div id="view-market" class="tab-view scrollable px-4 py-6">
+                <div id="view-market" class="tab-view px-4 py-6">
                     <div class="relative mb-5">
                         <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                        <input type="text" placeholder="Search apparel..." class="w-full bg-app-surface border border-app-border rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder-app-muted focus:outline-none focus:border-app-primary transition-colors">
+                        <input type="text" placeholder="Search apparel..." class="w-full bg-app-surface border border-app-border rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder-app-muted focus:outline-none focus:border-app-primary">
                     </div>
+                    
                     <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6" id="market-filters">
                         <button onclick="filterMarketplace('all', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-bold bg-app-primary text-app-bg">All Items</button>
                         <button onclick="filterMarketplace('uniform', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-semibold bg-app-surface text-app-muted border border-app-border">Campus Uniforms</button>
                         <button onclick="filterMarketplace('event', this)" class="shrink-0 rounded-full px-4 py-2 text-xs font-semibold bg-app-surface text-app-muted border border-app-border">Event Wears</button>
                     </div>
+
                     <div class="grid grid-cols-2 gap-3.5" id="market-grid"></div>
                 </div>
 
-                <div id="view-profile" class="tab-view scrollable px-4 py-6">
+                <div id="view-profile" class="tab-view px-4 py-6">
                     <div class="bg-app-surface rounded-[1.5rem] p-5 border border-app-border relative overflow-hidden shadow-glow mb-6">
                         <div class="absolute -top-10 -right-10 w-32 h-32 bg-app-primary/10 rounded-full blur-2xl pointer-events-none"></div>
                         <div class="flex items-center gap-4 relative z-10">
-                            <div class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary flex items-center justify-center text-white font-black text-xl shadow-lg">PM</div>
+                            <div class="w-16 h-16 bg-app-card rounded-full border-2 border-app-primary flex items-center justify-center text-white font-black text-xl shadow-lg">JP</div>
                             <div class="flex-1">
                                 <h2 class="text-xl font-extrabold text-white leading-tight">John Phillip</h2>
                                 <p class="text-sm text-app-muted font-medium mb-1.5">DNSC • <span class="text-app-primary font-bold">BSIT</span></p>
                                 <span class="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-app-bg bg-app-primary px-2 py-0.5 rounded-sm">
-                                    <i data-lucide="shield-check" class="w-3 h-3"></i> Verified Student
+                                    <i data-lucide="shield-check" class="w-3 h-3"></i> Verified User
                                 </span>
                             </div>
                         </div>
@@ -423,15 +489,19 @@
                     </button>
                 </div>
             </nav>
-
-            <div id="shop-modal" class="slide-modal no-scrollbar"></div>
-            <div id="item-modal" class="slide-modal no-scrollbar"></div>
+            
+            <div id="shop-modal" class="slide-modal no-scrollbar z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col"></div>
+            <div id="item-modal" class="slide-modal no-scrollbar z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col"></div>
+            
         </div>
     </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+    // Initialize Icons
+    document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); });
+
     // --- DATA MODEL ---
     const AppData = {
         map: null, mapInitialized: false, markers: [],
@@ -451,32 +521,21 @@
         ]
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
-        lucide.createIcons();
+    // --- APP LAUNCH & CLOSE LOGIC ---
+    function launchApp() {
+        document.body.classList.add('app-active');
+        document.getElementById('app-wrapper').classList.add('active');
+        // Initialize grids when app opens
         renderGrid('market-grid', AppData.marketItems);
         renderGrid('profile-listings-grid', AppData.userListings);
-    });
-
-    // --- HYBRID ROUTING ---
-    function launchApp() {
-        document.getElementById('master-landing').classList.remove('active');
-        document.getElementById('app-frame-container').classList.add('active');
-        // App starts on Auth Screen
     }
-
-    function exitApp() {
-        document.getElementById('app-frame-container').classList.remove('active');
-        document.getElementById('master-landing').classList.add('active');
-    }
-
-    // --- APP SCREEN ROUTING ---
-    function navToAppScreen(screenId) {
-        document.querySelectorAll('.inner-screen').forEach(el => el.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-        
-        if (screenId === 'screen-app' && !AppData.mapInitialized) {
-            setTimeout(initMap, 50);
-        }
+    
+    function closeApp() {
+        document.body.classList.remove('app-active');
+        document.getElementById('app-wrapper').classList.remove('active');
+        // Reset app state
+        document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
+        document.getElementById('screen-auth').classList.add('active');
     }
 
     // --- AUTH LOGIC ---
@@ -498,7 +557,9 @@
         lucide.createIcons();
         setTimeout(() => {
             btn.innerText = authMode === 'signin' ? "Sign In" : "Sign Up";
-            navToAppScreen('screen-app');
+            document.getElementById('screen-auth').classList.remove('active');
+            document.getElementById('screen-app').classList.add('active');
+            if (!AppData.mapInitialized) { setTimeout(initMap, 50); }
         }, 800);
     }
 
@@ -512,8 +573,7 @@
             btn.querySelector('span').classList.remove('font-bold'); btn.querySelector('span').classList.add('font-semibold');
         });
         
-        const targetTab = document.getElementById(`view-${tabId}`);
-        targetTab.classList.add('active');
+        document.getElementById(`view-${tabId}`).classList.add('active');
         document.getElementById('main-workspace').scrollTop = 0;
         
         btnElement.classList.remove('text-app-muted'); btnElement.classList.add('text-app-primary');
@@ -589,6 +649,7 @@
         AppData.map.panTo([vendor.lat - 0.003, vendor.lng], { animate: true, duration: 0.5 }); 
     }
 
+    // --- MARKETPLACE FILTERS & RENDERING ---
     function filterMarketplace(category, btnElement) {
         document.querySelectorAll('#market-filters button').forEach(btn => btn.className = "shrink-0 rounded-full px-4 py-2 text-xs font-semibold bg-app-surface text-app-muted border border-app-border");
         btnElement.className = "shrink-0 rounded-full px-4 py-2 text-xs font-bold bg-app-primary text-app-bg";
@@ -605,7 +666,7 @@
                 </div>
                 <div class="px-1 flex flex-col flex-1 pb-1">
                     <h3 class="font-semibold text-white text-xs leading-snug mb-1 line-clamp-2">${item.title}</h3>
-                    <div class="text-app-primary font-bold text-sm mt-auto">
+                    <div class="text-app-primary font-bold text-sm mb-3 mt-auto">
                         ${item.price} <span class="text-[9px] text-app-muted font-medium uppercase tracking-widest">${item.type}</span>
                     </div>
                 </div>
@@ -613,6 +674,7 @@
         `).join('');
     }
 
+    // --- OVERLAY MODALS ---
     function openShopModal(id) {
         const vendor = AppData.vendors.find(v => v.id === id);
         const modal = document.getElementById('shop-modal');
@@ -641,7 +703,7 @@
             </div>
         `;
         lucide.createIcons();
-        modal.classList.add('open');
+        modal.classList.add('translate-y-0');
     }
 
     function openItemModal(id) {
@@ -680,11 +742,11 @@
             </div>
         `;
         lucide.createIcons();
-        modal.classList.add('open');
+        modal.classList.add('translate-y-0');
     }
 
     function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('open');
+        document.getElementById(modalId).classList.remove('translate-y-0');
     }
 </script>
 </body>
