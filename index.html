@@ -411,8 +411,8 @@
         </div>
     </footer>
 
-    <a href="#top" id="scroll-top-btn" class="bg-app-primary text-app-bg p-3 rounded-full shadow-glow border border-app-primary hover:bg-white hover:text-app-bg transition-colors">
-        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    <a href="#top" id="scroll-top-btn" class="bg-app-card text-white p-3 rounded-full shadow-glow border border-app-border hover:bg-app-primary hover:border-app-primary hover:text-app-bg transition-colors">
+        <i data-lucide="chevron-up" class="w-6 h-6"></i>
     </a>
 </div>
 
@@ -424,12 +424,12 @@
     <div id="app-frame">
         
         <div id="screen-auth" class="app-screen active overflow-y-auto no-scrollbar bg-app-bg">
-            <div class="flex-1 flex flex-col px-6 py-8 relative">
+            <div class="flex-1 flex flex-col justify-center px-6 py-8 relative">
                 <button onclick="closeApp()" class="absolute top-6 left-6 text-app-muted hover:text-white transition-colors z-20 sm:hidden">
                     <i data-lucide="arrow-left" class="w-6 h-6"></i>
                 </button>
 
-                <div class="mt-16 mb-8 text-center">
+                <div class="mt-8 mb-6 text-center">
                     <div class="w-12 h-12 bg-app-primary rounded-lg flex items-center justify-center transform rotate-3 mx-auto mb-4 shadow-glow">
                         <i data-lucide="map" class="w-6 h-6 text-app-bg -rotate-3"></i>
                     </div>
@@ -442,28 +442,28 @@
                     <button onclick="toggleAuth('signup')" id="btn-signup" class="flex-1 py-2 rounded-lg text-sm font-bold text-app-muted hover:text-white transition-all">Sign Up</button>
                 </div>
 
-                <div class="space-y-4">
+                <div class="space-y-4 mb-8">
                     <div id="field-name" class="hidden">
                         <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Full Name</label>
-                        <input type="text" placeholder="John Phillip" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary">
+                        <input type="text" placeholder="e.g. Juan Dela Cruz" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-app-primary">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Email Address</label>
                         <div class="relative">
                             <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                            <input type="email" value="philiplatipus@gmail.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary">
+                            <input type="email" placeholder="your.email@example.com" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-app-muted uppercase tracking-wider mb-2 ml-1">Password</label>
                         <div class="relative">
                             <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-app-muted"></i>
-                            <input type="password" value="********" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary">
+                            <input type="password" placeholder="••••••••" class="w-full bg-app-surface border border-app-border rounded-xl py-3.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-app-primary">
                         </div>
                     </div>
                 </div>
 
-                <button onclick="mockLogin()" id="auth-action-btn" class="w-full bg-white text-app-bg hover:bg-app-primary hover:text-white py-4 rounded-xl font-bold mt-auto mb-4 transition-colors shadow-sm active:scale-[0.98]">
+                <button onclick="mockLogin()" id="auth-action-btn" class="w-full bg-white text-app-bg hover:bg-app-primary hover:text-white py-4 rounded-xl font-bold transition-colors shadow-sm active:scale-[0.98]">
                     Sign In
                 </button>
             </div>
@@ -495,7 +495,7 @@
                     <div id="leaflet-map" class="absolute inset-0 w-full h-full"></div>
                     
                     <div class="absolute bottom-4 left-4 right-4 z-[500] pointer-events-none overflow-hidden pb-[80px]">
-                        <div id="map-drawer" class="bg-app-surface/95 backdrop-blur-xl rounded-[1.5rem] border border-app-border p-5 transform translate-y-[150%] pointer-events-auto shadow-2xl transition-transform duration-300">
+                        <div id="map-drawer" class="bg-app-surface/95 backdrop-blur-xl rounded-[1.5rem] border border-app-border p-5 transform translate-y-[150%] pointer-events-auto shadow-2xl transition-transform duration-300 relative">
                             </div>
                     </div>
                 </div>
@@ -559,8 +559,8 @@
                 </div>
             </nav>
             
-            <div id="shop-modal" class="slide-modal z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
-            <div id="item-modal" class="slide-modal z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
+            <div id="shop-modal" class="z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
+            <div id="item-modal" class="z-[1000] absolute top-0 left-0 w-full h-full bg-app-bg transform translate-y-full transition-transform duration-300 flex flex-col overflow-hidden"></div>
             
         </div>
     </div>
@@ -585,17 +585,17 @@
         map: null, mapInitialized: false, markers: [],
         vendors: [
             { id: 1, name: "Stitch Master", type: "tailor", lat: 7.3082, lng: 125.6845, rating: "4.9", ratingCount: 124, address: "Panabo City Center", price: "₱100 - ₱500", desc: "Expert uniform alterations, custom sizing, and quick campus repairs.", fullDesc: "Stitch Master specializes in academic uniforms for DNSC students. We ensure strict compliance with the institute's dress code while providing a comfortable fit.", icon: "scissors", img: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&q=80&w=800" },
-            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", ratingCount: 89, address: "Near DNSC Campus", price: "₱30/kilo", desc: "Same-day eco-friendly washing and ironing.", fullDesc: "Conveniently located near the campus. We handle delicate event wear and heavily soiled uniforms with eco-friendly detergents.", icon: "shirt", img: "https://images.unsplash.com/photo-1582734440784-82cefb31e67c?auto=format&fit=crop&q=80&w=800" },
-            { id: 3, name: "Glamour Rentals", type: "rental", lat: 7.3050, lng: 125.6880, rating: "5.0", ratingCount: 42, address: "National Highway", price: "₱500 - ₱1500/day", desc: "High-quality gowns, barongs, and formal wear.", fullDesc: "Premium rentals for pageants, birthdays, and thesis defenses. Alterations are included in the rental fee to guarantee a perfect fit.", icon: "sparkles", img: "https://images.unsplash.com/photo-1566160980280-992a6b2ea828?auto=format&fit=crop&q=80&w=800" }
+            { id: 2, name: "Fresh Fold Laundry", type: "laundry", lat: 7.3105, lng: 125.6810, rating: "4.7", ratingCount: 89, address: "Near DNSC Campus", price: "₱30/kilo", desc: "Same-day eco-friendly washing and ironing.", fullDesc: "Conveniently located near the campus. We handle delicate event wear and heavily soiled uniforms with eco-friendly detergents.", icon: "shirt", img: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&q=80&w=800" },
+            { id: 3, name: "Glamour Rentals", type: "rental", lat: 7.3050, lng: 125.6880, rating: "5.0", ratingCount: 42, address: "National Highway", price: "₱500 - ₱1500/day", desc: "High-quality gowns, barongs, and formal wear.", fullDesc: "Premium rentals for pageants, birthdays, and thesis defenses. Alterations are included in the rental fee to guarantee a perfect fit.", icon: "sparkles", img: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=800" }
         ],
         marketItems: [
             { id: 101, title: "Maritime Cadet Uniform", price: "₱800", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "Gabriel C.", desc: "Complete set. Used for only one semester. Washed and ironed, ready to wear." },
             { id: 102, title: "Tailored Linen Blazer", price: "₱280", type: "/day", category: "event", status: "L | LIKE NEW", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Stitch Master", desc: "Perfect for capstone defenses. High quality linen, very breathable." },
-            { id: 103, title: "Red Pageant Evening Gown", price: "₱1,200", type: "/day", category: "event", status: "CUSTOM", img: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Glamour Rentals", desc: "Stunning red silk gown perfect for campus pageants or birthday debuts. Minor alterations included." },
+            { id: 103, title: "Red Pageant Evening Gown", price: "₱1,200", type: "/day", category: "event", status: "CUSTOM", img: "https://images.unsplash.com/photo-1583845112102-19e48719280b?auto=format&fit=crop&q=80&w=600", isRent: true, seller: "Glamour Rentals", desc: "Stunning red silk gown perfect for campus pageants or birthday debuts. Minor alterations included." },
             { id: 104, title: "BSIT Dept. Polo", price: "₱250", type: "Buy", category: "uniform", status: "S | FAIR", img: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Wyne", desc: "Standard BSIT uniform. Slight fading on the collar but no tears." }
         ],
         userListings: [
-            { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Phillip", desc: "Complete PE uniform set. Includes shirt and jogging pants." }
+            { id: 201, title: "DNSC PE Uniform Set", price: "₱350", type: "Buy", category: "uniform", status: "M | GOOD", img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=600", isRent: false, seller: "John Phillip", desc: "Complete PE uniform set. Includes shirt and jogging pants." }
         ]
     };
 
@@ -691,11 +691,15 @@
     function filterMap(type, btnElement) {
         document.querySelectorAll('#map-filters button').forEach(btn => btn.className = "shrink-0 rounded-full px-5 py-2 text-xs font-semibold transition-all bg-app-surface/90 backdrop-blur text-app-muted border border-app-border hover:text-white");
         btnElement.className = "shrink-0 rounded-full px-5 py-2 text-xs font-bold transition-all bg-app-primary text-app-bg shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-app-primary";
-        document.getElementById('map-drawer').classList.add('translate-y-[150%]');
+        closeMapDrawer();
         
         const filtered = type === 'all' ? AppData.vendors : AppData.vendors.filter(v => v.type === type);
         renderPins(filtered);
         if (filtered.length > 0) { AppData.map.flyTo([filtered[0].lat, filtered[0].lng], type === 'all' ? 15 : 16, { duration: 1 }); }
+    }
+
+    function closeMapDrawer() {
+        document.getElementById('map-drawer').classList.add('translate-y-[150%]');
     }
 
     function selectVendor(vendor) {
@@ -703,8 +707,9 @@
         lucide.createIcons();
         const drawer = document.getElementById('map-drawer');
         drawer.innerHTML = `
+            <button onclick="closeMapDrawer()" class="absolute top-4 right-4 bg-app-card p-1.5 rounded-full text-app-muted hover:text-white border border-app-border transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
             <div class="w-12 h-1 bg-app-border rounded-full mx-auto mb-4"></div>
-            <div class="flex justify-between items-start mb-3">
+            <div class="flex justify-between items-start mb-3 pr-6">
                 <div>
                     <h3 class="text-xl font-bold text-white leading-none mb-1.5 tracking-tight">${vendor.name}</h3>
                     <p class="text-[10px] text-app-primary font-bold uppercase tracking-widest">${vendor.type} • ${vendor.address}</p>
