@@ -21,8 +21,18 @@
                             primary: '#10b981', primaryHover: '#059669', text: '#f4f4f5', muted: '#a1a1aa'
                         }
                     },
-                    boxShadow: { 'glow': '0 0 30px rgba(16, 185, 129, 0.15)', 'glow-lg': '0 0 50px rgba(16, 185, 129, 0.25)' },
-                    animation: { 'fade-in': 'fadeIn 0.4s ease-out forwards', 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                    boxShadow: { 'glow': '0 0 30px rgba(16, 185, 129, 0.15)', 'glow-lg': '0 0 50px rgba(16, 185, 129, 0.3)' },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.4s ease-out forwards', 
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
                 }
             }
         }
@@ -40,7 +50,6 @@
             -webkit-tap-highlight-color: transparent;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            scroll-behavior: smooth;
         }
 
         body.app-active { overflow: hidden; }
@@ -48,18 +57,16 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Scroll Reveal Animations */
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
         .delay-100 { transition-delay: 100ms; }
         .delay-200 { transition-delay: 200ms; }
-        .delay-300 { transition-delay: 300ms; }
-
-        /* LANDING PAGE STYLES */
-        #landing-wrapper { width: 100%; min-height: 100vh; transition: opacity 0.4s ease; }
-        .hero-bg {
-            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.15), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(20, 184, 166, 0.1), transparent 40%);
-        }
+        
+        /* Continuous Ticker Animation */
+        .ticker-wrap { width: 100%; overflow: hidden; background-color: #10b981; padding: 0.75rem 0; transform: rotate(-2deg) scale(1.05); z-index: 20; position: relative; box-shadow: 0 0 40px rgba(16,185,129,0.4); }
+        .ticker { display: inline-flex; white-space: nowrap; animation: ticker 25s linear infinite; }
+        .ticker-item { margin: 0 2rem; font-weight: 900; color: #09090b; font-size: 1.25rem; letter-spacing: 0.1em; text-transform: uppercase; display: flex; items: center; gap: 2rem;}
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
 
         /* Fixed Navigation Blur Transition */
         #main-nav { transition: all 0.3s ease; }
@@ -97,7 +104,6 @@
 
         .app-screen { display: none; flex-direction: column; height: 100%; width: 100%; }
         .app-screen.active { display: flex; animation: fadeIn 0.3s ease forwards; }
-
         .workspace { flex: 1; position: relative; overflow-y: auto; overflow-x: hidden; }
         .tab-view { display: none; }
         .tab-view.active { display: block; animation: fadeIn 0.2s ease forwards; }
@@ -135,9 +141,8 @@
                 <span class="text-xl font-bold tracking-tight text-white">Fabric Grid<span class="text-app-primary">: TexMap</span></span>
             </div>
             <div class="hidden md:flex gap-8 text-sm font-medium text-app-muted">
-                <a href="#about" class="hover:text-app-primary transition-colors">About</a>
+                <a href="#impact" class="hover:text-app-primary transition-colors">Impact</a>
                 <a href="#features" class="hover:text-app-primary transition-colors">Core Features</a>
-                <a href="#download" class="hover:text-app-primary transition-colors">Download</a>
                 <a href="#team" class="hover:text-app-primary transition-colors">Our Team</a>
             </div>
             <button onclick="launchApp()" class="bg-white hover:bg-app-primary hover:text-white text-app-bg px-6 py-2.5 rounded-full font-bold text-sm transition-colors shadow-sm">
@@ -146,29 +151,29 @@
         </div>
     </nav>
 
-    <header class="max-w-7xl mx-auto px-6 pt-32 pb-24 flex flex-col lg:flex-row items-center gap-16 relative z-10 min-h-screen">
+    <header class="max-w-7xl mx-auto px-6 pt-32 pb-20 flex flex-col lg:flex-row items-center gap-16 relative z-10 min-h-[90vh]">
         <div class="flex-1 text-center lg:text-left reveal">
             <span class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-app-surface border border-app-border text-app-primary text-xs font-bold tracking-widest uppercase mb-6 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-app-primary animate-pulse"></span> Target Market: DNSC & Panabo City
+                <span class="w-2 h-2 rounded-full bg-app-primary animate-pulse"></span> Pilot: DNSC & Panabo City
             </span>
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
+            <h1 class="text-5xl md:text-7xl lg:text-[5rem] font-extrabold tracking-tight text-white mb-6 leading-[1.05]">
                 The Circular <br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-app-primary to-teal-400 italic">Textile Loop.</span>
             </h1>
             <p class="text-lg md:text-xl text-app-muted mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Empowering DNSC students, Panabo residents, and event participants to easily locate local tailors, rent event wear, and securely trade pre-loved garments.
+                Empowering students, residents, and event participants to locate local tailors, rent event wear, and securely trade pre-loved garments. <b>Save money. Save the planet.</b>
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <button onclick="launchApp()" class="bg-app-primary hover:bg-app-primaryHover text-app-bg px-8 py-4 rounded-full font-bold text-lg shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2">
                     Open Web App <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </button>
-                <a href="#about" class="bg-app-surface hover:bg-app-card text-white border border-app-border hover:border-app-primary/50 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center">
-                    How It Works
+                <a href="#impact" class="bg-app-surface hover:bg-app-card text-white border border-app-border hover:border-app-primary/50 px-8 py-4 rounded-full font-bold text-lg transition-all flex items-center justify-center">
+                    See The Impact
                 </a>
             </div>
         </div>
         
-        <div class="flex-1 w-full max-w-md lg:max-w-full relative reveal delay-200">
+        <div class="flex-1 w-full max-w-md lg:max-w-full relative reveal delay-200 animate-float">
             <div class="absolute inset-0 bg-app-primary/20 blur-[100px] rounded-full animate-pulse-slow"></div>
             <div class="relative bg-app-card border border-app-border rounded-[2rem] p-4 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500 hover:shadow-glow-lg cursor-pointer" onclick="launchApp()">
                 <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1200" alt="Map Interface" class="rounded-[1.5rem] w-full h-[400px] object-cover grayscale-[0.3] opacity-80">
@@ -183,73 +188,70 @@
         </div>
     </header>
 
-    <section id="challenge" class="py-24 bg-app-surface border-y border-app-border relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">The Challenge</h2>
-                <div class="w-16 h-1 bg-app-primary mx-auto rounded-full"></div>
+    <div class="ticker-wrap mt-8 mb-20">
+        <div class="ticker">
+            <div class="ticker-item">
+                <span>REDUCE WASTE</span> <span>•</span> 
+                <span>REUSE GARMENTS</span> <span>•</span> 
+                <span>RENT EVENT WEAR</span> <span>•</span> 
+                <span>REPAIR CLOTHING</span> <span>•</span> 
+                <span>SUPPORT LOCAL TAILORS</span> <span>•</span>
             </div>
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="reveal">
-                    <p class="text-lg text-app-muted leading-relaxed mb-6">
-                        Fast fashion and the single-use nature of event wear contribute heavily to environmental waste. Locally, students consistently struggle to find affordable campus uniforms, while expert tailors and rental shops lack the digital visibility to reach them.
-                    </p>
-                    <p class="text-lg text-white font-medium leading-relaxed border-l-4 border-app-primary pl-6 bg-gradient-to-r from-app-primary/10 to-transparent py-4 pr-4 rounded-r-xl">
-                        Fabric Grid: TexMap exists to bridge this gap. We are building a localized, digital circular economy that keeps textiles in use longer, supporting both students and small businesses.
-                    </p>
-                </div>
-                <div class="grid grid-cols-2 gap-4 reveal delay-200">
-                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border hover:border-app-primary/50 transition-colors flex flex-col items-center justify-center text-center h-full group">
-                        <i data-lucide="leaf" class="w-8 h-8 text-app-primary mb-3 group-hover:scale-110 transition-transform"></i>
-                        <h3 class="text-white font-bold mb-1">Sustainability</h3>
-                        <p class="text-xs text-app-muted">Reducing textile waste.</p>
-                    </div>
-                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border hover:border-app-primary/50 transition-colors flex flex-col items-center justify-center text-center h-full group">
-                        <i data-lucide="users" class="w-8 h-8 text-app-primary mb-3 group-hover:scale-110 transition-transform"></i>
-                        <h3 class="text-white font-bold mb-1">Community</h3>
-                        <p class="text-xs text-app-muted">Peer-to-peer exchange.</p>
-                    </div>
-                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border hover:border-app-primary/50 transition-colors flex flex-col items-center justify-center text-center h-full group">
-                        <i data-lucide="store" class="w-8 h-8 text-app-primary mb-3 group-hover:scale-110 transition-transform"></i>
-                        <h3 class="text-white font-bold mb-1">Visibility</h3>
-                        <p class="text-xs text-app-muted">Empowering local tailors.</p>
-                    </div>
-                    <div class="bg-app-bg p-6 rounded-2xl border border-app-border hover:border-app-primary/50 transition-colors flex flex-col items-center justify-center text-center h-full group">
-                        <i data-lucide="map" class="w-8 h-8 text-app-primary mb-3 group-hover:scale-110 transition-transform"></i>
-                        <h3 class="text-white font-bold mb-1">Accessibility</h3>
-                        <p class="text-xs text-app-muted">Spatial mapping (GIS).</p>
-                    </div>
-                </div>
+            <div class="ticker-item">
+                <span>REDUCE WASTE</span> <span>•</span> 
+                <span>REUSE GARMENTS</span> <span>•</span> 
+                <span>RENT EVENT WEAR</span> <span>•</span> 
+                <span>REPAIR CLOTHING</span> <span>•</span> 
+                <span>SUPPORT LOCAL TAILORS</span> <span>•</span>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="about" class="py-24 bg-app-bg relative">
+    <section id="impact" class="py-24 bg-app-bg relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">How It Works</h2>
-                <p class="text-lg text-app-muted leading-relaxed">
-                    Fabric Grid: TexMap connects you with everything you need to manage your wardrobe sustainably. Find services or trade garments in three simple steps.
-                </p>
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 reveal">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-4">The Reality of Fashion.</h2>
+                    <p class="text-lg text-app-muted leading-relaxed">The fast fashion industry is overwhelming our planet. Here is why Fabric Grid: TexMap focuses on building a local, sustainable alternative.</p>
+                </div>
+                <div class="hidden md:flex gap-2 mt-4">
+                    <button class="w-10 h-10 rounded-full border border-app-border flex items-center justify-center hover:bg-app-surface text-white transition-colors" onclick="document.getElementById('impact-carousel').scrollBy({left: -350, behavior: 'smooth'})"><i data-lucide="chevron-left"></i></button>
+                    <button class="w-10 h-10 rounded-full border border-app-primary bg-app-primary text-app-bg flex items-center justify-center hover:bg-app-primaryHover transition-colors" onclick="document.getElementById('impact-carousel').scrollBy({left: 350, behavior: 'smooth'})"><i data-lucide="chevron-right"></i></button>
+                </div>
             </div>
-            
-            <div class="grid md:grid-cols-3 gap-6 relative">
-                <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-app-border -z-10"></div>
-                <div class="bg-app-surface p-8 rounded-3xl border border-app-border text-center hover:border-app-primary transition-colors reveal">
-                    <div class="w-12 h-12 bg-app-primary text-app-bg rounded-full flex items-center justify-center font-black text-xl mx-auto mb-4 shadow-glow">1</div>
-                    <h4 class="text-white font-bold mb-2">Locate Services</h4>
-                    <p class="text-sm text-app-muted">Open the map to find nearby tailors, laundry shops, and rental boutiques in Panabo City.</p>
+
+            <div id="impact-carousel" class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 no-scrollbar reveal delay-100 cursor-grab active:cursor-grabbing">
+                
+                <div class="snap-center shrink-0 w-[85vw] sm:w-[400px] h-[500px] relative rounded-[2rem] overflow-hidden group shadow-lg border border-app-border">
+                    <img src="https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-8">
+                        <div class="bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-4">The Problem</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">The Landfill Crisis</h3>
+                        <p class="text-app-muted text-sm leading-relaxed">Globally, 85% of all textiles go to the dump each year. Single-use event wear and discarded uniforms are a massive contributor to local waste.</p>
+                    </div>
                 </div>
-                <div class="bg-app-surface p-8 rounded-3xl border border-app-border text-center hover:border-app-primary transition-colors reveal delay-100">
-                    <div class="w-12 h-12 bg-app-primary text-app-bg rounded-full flex items-center justify-center font-black text-xl mx-auto mb-4 shadow-glow">2</div>
-                    <h4 class="text-white font-bold mb-2">Discover Apparel</h4>
-                    <p class="text-sm text-app-muted">Browse the marketplace for campus uniforms, pageant gowns, and formal event wear.</p>
+
+                <div class="snap-center shrink-0 w-[85vw] sm:w-[400px] h-[500px] relative rounded-[2rem] overflow-hidden group shadow-glow border border-app-primary/50">
+                    <img src="https://images.unsplash.com/photo-1605289982774-9a6fef564df8?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-8">
+                        <div class="bg-app-primary text-app-bg text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-4 shadow-sm">The Solution</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Empowering Tailors</h3>
+                        <p class="text-app-muted text-sm leading-relaxed text-gray-200">By mapping local artisans, we extend the lifespan of garments. Repairing and altering clothes reduces carbon, waste, and water footprints by 20-30%.</p>
+                    </div>
                 </div>
-                <div class="bg-app-surface p-8 rounded-3xl border border-app-border text-center hover:border-app-primary transition-colors reveal delay-200">
-                    <div class="w-12 h-12 bg-app-primary text-app-bg rounded-full flex items-center justify-center font-black text-xl mx-auto mb-4 shadow-glow">3</div>
-                    <h4 class="text-white font-bold mb-2">Connect & Transact</h4>
-                    <p class="text-sm text-app-muted">Message sellers directly or book a service with a shop. Keep textiles in the loop!</p>
+
+                <div class="snap-center shrink-0 w-[85vw] sm:w-[400px] h-[500px] relative rounded-[2rem] overflow-hidden group shadow-lg border border-app-border">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-8">
+                        <div class="bg-blue-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-4">The Community</div>
+                        <h3 class="text-2xl font-bold text-white mb-2">DNSC Campus Loop</h3>
+                        <p class="text-app-muted text-sm leading-relaxed">Connecting students to trade pre-loved uniforms and rent graduation wear securely. We make sustainable fashion cheap, local, and accessible.</p>
+                    </div>
                 </div>
+
             </div>
         </div>
     </section>
@@ -257,47 +259,56 @@
     <section id="features" class="py-24 bg-app-surface border-y border-app-border">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Our 3 Core Features</h2>
-                <p class="text-app-muted">Everything you need to navigate the local textile economy.</p>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">The Digital Ecosystem</h2>
+                <p class="text-app-muted text-lg">Three core features designed to keep your wardrobe sustainable.</p>
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-app-bg border border-app-border p-8 md:p-10 rounded-3xl flex flex-col text-center items-center hover:border-app-primary hover:shadow-glow-lg transition-all duration-300 reveal group">
-                    <div class="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center border border-app-border mb-6 group-hover:bg-app-primary/10 transition-colors">
-                        <i data-lucide="map" class="text-app-primary w-10 h-10 group-hover:scale-110 transition-transform"></i>
+                
+                <div class="relative bg-app-bg border border-app-border rounded-3xl overflow-hidden hover:border-app-primary hover:shadow-glow-lg transition-all duration-500 reveal group min-h-[450px] flex flex-col justify-end p-8">
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-30 group-hover:scale-105 transition-all duration-700 grayscale">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 to-transparent"></div>
+                    
+                    <div class="relative z-10 transform group-hover:-translate-y-4 transition-transform duration-500">
+                        <div class="w-16 h-16 bg-app-card rounded-2xl flex items-center justify-center border border-app-border mb-6 group-hover:bg-app-primary group-hover:text-app-bg transition-colors">
+                            <i data-lucide="map" class="w-8 h-8 text-app-primary group-hover:text-app-bg transition-colors"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Live GIS Map</h3>
+                        <p class="text-app-muted leading-relaxed group-hover:text-gray-300 transition-colors">
+                            A real-time spatial map allowing you to locate textile services. Use interactive filters to sort through tailors, laundries, and rentals. View pricing and community ratings instantly.
+                        </p>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-4">1. Live GIS Map</h3>
-                    <p class="text-app-muted leading-relaxed">
-                        A real-time spatial map allowing you to locate textile services. Use <b class="text-white">interactive filters</b> to sort through tailors, laundries, and rentals. View pricing and community ratings instantly.
-                    </p>
                 </div>
                 
-                <div class="bg-app-bg border border-app-border p-8 md:p-10 rounded-3xl flex flex-col text-center items-center hover:border-app-primary hover:shadow-glow-lg transition-all duration-300 reveal delay-100 group">
-                    <div class="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center border border-app-border mb-6 group-hover:bg-app-primary/10 transition-colors">
-                        <i data-lucide="sparkles" class="text-app-primary w-10 h-10 group-hover:scale-110 transition-transform"></i>
+                <div class="relative bg-app-bg border border-app-border rounded-3xl overflow-hidden hover:border-app-primary hover:shadow-glow-lg transition-all duration-500 reveal delay-100 group min-h-[450px] flex flex-col justify-end p-8">
+                    <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-30 group-hover:scale-105 transition-all duration-700 grayscale">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 to-transparent"></div>
+                    
+                    <div class="relative z-10 transform group-hover:-translate-y-4 transition-transform duration-500">
+                        <div class="w-16 h-16 bg-app-card rounded-2xl flex items-center justify-center border border-app-border mb-6 group-hover:bg-app-primary group-hover:text-app-bg transition-colors">
+                            <i data-lucide="sparkles" class="w-8 h-8 text-app-primary group-hover:text-app-bg transition-colors"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Event Wear Discovery</h3>
+                        <p class="text-app-muted leading-relaxed group-hover:text-gray-300 transition-colors">
+                            Stop buying expensive outfits for a single night. Easily discover, filter, and rent high-quality event wear for school pageants, birthday debuts, or capstone defenses.
+                        </p>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-4">2. Event Wear Discovery</h3>
-                    <p class="text-app-muted leading-relaxed">
-                        Stop buying expensive outfits for a single night. Easily discover, filter, and rent high-quality event wear for school pageants, birthday debuts, or capstone defenses.
-                    </p>
                 </div>
 
-                <div class="bg-app-bg border border-app-border p-8 md:p-10 rounded-3xl flex flex-col text-center items-center hover:border-app-primary hover:shadow-glow-lg transition-all duration-300 reveal delay-200 group">
-                    <div class="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center border border-app-border mb-6 group-hover:bg-app-primary/10 transition-colors">
-                        <i data-lucide="shopping-bag" class="text-app-primary w-10 h-10 group-hover:scale-110 transition-transform"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-4">3. Circular Marketplace</h3>
-                    <p class="text-app-muted leading-relaxed mb-6">
-                        A P2P listing feed shared by both users and partner shops. Buy, sell, or trade pre-loved campus uniforms safely.
-                    </p>
-                    <div class="flex flex-col gap-3 w-full mt-auto">
-                        <div class="bg-app-surface p-3 rounded-xl border border-app-border text-left">
-                            <strong class="text-white text-sm block mb-1">For Shops:</strong>
-                            <span class="text-xs text-app-muted">"Boost Listing" to promote services to the top of the map.</span>
+                <div class="relative bg-app-bg border border-app-border rounded-3xl overflow-hidden hover:border-app-primary hover:shadow-glow-lg transition-all duration-500 reveal delay-200 group min-h-[450px] flex flex-col justify-end p-8">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-30 group-hover:scale-105 transition-all duration-700 grayscale">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 to-transparent"></div>
+                    
+                    <div class="relative z-10 transform group-hover:-translate-y-4 transition-transform duration-500">
+                        <div class="w-16 h-16 bg-app-card rounded-2xl flex items-center justify-center border border-app-border mb-6 group-hover:bg-app-primary group-hover:text-app-bg transition-colors">
+                            <i data-lucide="shopping-bag" class="w-8 h-8 text-app-primary group-hover:text-app-bg transition-colors"></i>
                         </div>
-                        <div class="bg-app-surface p-3 rounded-xl border border-app-border text-left">
-                            <strong class="text-white text-sm block mb-1">For Users:</strong>
-                            <span class="text-xs text-app-muted">"Boost Product" to sell garments faster in the feed.</span>
+                        <h3 class="text-2xl font-bold text-white mb-3">Circular Marketplace</h3>
+                        <p class="text-app-muted leading-relaxed mb-4 group-hover:text-gray-300 transition-colors">
+                            A P2P listing feed shared by both users and partner shops. Buy, sell, or trade pre-loved campus uniforms safely.
+                        </p>
+                        <div class="flex items-center gap-2 text-xs font-bold text-app-primary bg-app-primary/10 w-fit px-3 py-1.5 rounded-lg border border-app-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i> Start Trading
                         </div>
                     </div>
                 </div>
@@ -339,26 +350,14 @@
         </div>
     </section>
 
-    <section id="download" class="py-24 bg-app-surface border-t border-app-border">
-        <div class="max-w-4xl mx-auto px-6 text-center reveal">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Get Fabric Grid: TexMap Today</h2>
-            <p class="text-lg text-app-muted mb-10 max-w-2xl mx-auto">Available on iOS and Android. Join the circular textile movement and start discovering, renting, and trading local garments seamlessly.</p>
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                <button class="w-full sm:w-auto flex items-center justify-center gap-3 bg-app-bg border border-app-border hover:border-app-primary text-white px-8 py-4 rounded-2xl transition-all shadow-sm hover:-translate-y-1 hover:shadow-glow">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.365 21.442c-1.393.978-2.73.978-4.103.04-3.32-2.316-6.196-6.906-6.196-11.233 0-3.303 1.637-5.12 3.86-5.184 1.48-.04 2.825.96 3.593.96.75 0 2.29-.98 3.96-.826 1.707.098 3.235.82 4.14 2.164-3.344 2.015-2.862 6.702.43 8.01-1.012 2.59-2.613 5.343-5.684 6.069zm-2.45-16.71c.642-2.222-1.042-4.524-3.21-4.732-.823 2.378 1.477 4.79 3.21 4.732z"/></svg>
-                    <div class="text-left">
-                        <div class="text-[10px] uppercase tracking-wider text-app-muted leading-none mb-1">Download on the</div>
-                        <div class="text-lg font-bold leading-none">App Store</div>
-                    </div>
-                </button>
-                <button class="w-full sm:w-auto flex items-center justify-center gap-3 bg-app-bg border border-app-border hover:border-app-primary text-white px-8 py-4 rounded-2xl transition-all shadow-sm hover:-translate-y-1 hover:shadow-glow">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.609 1.814L13.792 12 3.61 22.186a1.98 1.98 0 0 1-.41-.532A1.954 1.954 0 0 1 3 20.658V3.342c0-.36.068-.7.2-.996.115-.246.254-.42.409-.532zM14.73 12.936l4.137 4.136-11.83 6.786a1.996 1.996 0 0 1-1.85-.098l9.543-10.824zm4.137-5.872L14.73 11.064 5.187.24C5.467.085 5.793 0 6.136 0c.348 0 .68.087.97.247l11.761 6.817zM20.485 8l-1.008-1.008-4.22 4.008 4.22 4.22 1.008-1.008a1.97 1.97 0 0 0 .515-1.106c.01-.137.01-.274 0-.411a1.969 1.969 0 0 0-.515-1.106z"/></svg>
-                    <div class="text-left">
-                        <div class="text-[10px] uppercase tracking-wider text-app-muted leading-none mb-1">GET IT ON</div>
-                        <div class="text-lg font-bold leading-none">Google Play</div>
-                    </div>
-                </button>
-            </div>
+    <section class="py-24 bg-app-surface border-t border-app-border relative overflow-hidden">
+        <div class="absolute inset-0 bg-app-primary/10 blur-[100px] animate-pulse-slow"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center reveal relative z-10">
+            <h2 class="text-4xl md:text-5xl font-black text-white mb-6">Ready to close the loop?</h2>
+            <p class="text-xl text-app-muted mb-10">Join the movement. Start discovering, renting, and trading local garments in Panabo City.</p>
+            <button onclick="launchApp()" class="bg-app-primary hover:bg-app-primaryHover text-app-bg px-10 py-5 rounded-full font-black text-xl shadow-glow-lg transition-all active:scale-95 flex items-center justify-center gap-3 mx-auto border-2 border-app-primary">
+                Launch Web App Now <i data-lucide="external-link" class="w-6 h-6"></i>
+            </button>
         </div>
     </section>
 
@@ -378,7 +377,7 @@
                 <div>
                     <h4 class="text-white font-bold mb-4">Quick Links</h4>
                     <ul class="space-y-2 text-sm text-app-muted">
-                        <li><a href="#about" class="hover:text-app-primary transition-colors">About Us</a></li>
+                        <li><a href="#impact" class="hover:text-app-primary transition-colors">The Impact</a></li>
                         <li><a href="#features" class="hover:text-app-primary transition-colors">Features</a></li>
                         <li><a href="#" onclick="launchApp()" class="hover:text-app-primary transition-colors">Web App</a></li>
                         <li><a href="#team" class="hover:text-app-primary transition-colors">Our Team</a></li>
@@ -597,6 +596,34 @@
 
         document.querySelectorAll('.reveal').forEach((el) => {
             observer.observe(el);
+        });
+
+        // --- CAROUSEL DRAG TO SCROLL LOGIC ---
+        const slider = document.getElementById('impact-carousel');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; 
+            slider.scrollLeft = scrollLeft - walk;
         });
     });
 
